@@ -1,18 +1,17 @@
 class Nave extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y) {
-    super(scene, x, y, 'Nave2');
+    super(scene, x, y, 'nave');
 
     scene.add.existing(this);
     scene.physics.world.enable(this);
 
-    // Configura las propiedades de la nave
-    this.body.setGravityY(0); // Desactiva la gravedad
-    this.body.setCollideWorldBounds(true); // Evita que la nave salga de los límites del mundo
-    this.body.setVelocityX(500);
+    this.body.setGravityY(0);
+    this.body.setCollideWorldBounds(true);
+    this.body.setVelocityX(300);
     this.setScale(0.45);
 
     this.isShooting = false;
-    this.shootDelay = 300; // Retardo entre disparos en milisegundos
+    this.shootDelay = 300;
     this.lastShootTime = 400;
   }
 
@@ -25,11 +24,11 @@ class Nave extends Phaser.GameObjects.Sprite {
     } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
       this.body.velocity.y = 400; // Velocidad hacia abajo
     } else {
-      this.body.velocity.y = 0; // No se presionó ninguna tecla, la nave se detiene
+      this.body.velocity.y = 0;
     }
 
     if (teclas.space.isDown) {
-      // Verifica si ha pasado el tiempo suficiente desde el último disparo
+      // Verificación del tiempo suficiente desde el último disparo
       if (time > this.lastShootTime + this.shootDelay) {
         this.shoot();
         this.lastShootTime = time;
@@ -38,57 +37,120 @@ class Nave extends Phaser.GameObjects.Sprite {
   }
 
   shoot() {
-    // Crea y configura el disparo
+    // Crear y configurar el disparo
     const disparo = this.scene.physics.add.sprite(this.x + 15, this.y + 1, 'Disparo');
     disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
     disparo.setScale(0.3);
 
-    // Destruye el disparo después de cierto tiempo para evitar la acumulación de disparos en el mundo
+    // Destrucción el disparo después de cierto tiempo para evitar la acumulación de disparos en el mundo
     this.scene.time.addEvent({
-      delay: 4000, // Tiempo en milisegundos antes de destruir el disparo
+      delay: 2000, // Tiempo en milisegundos antes de destruir el disparo
       callback: () => {
         disparo.destroy();
       },
     });
+  }
+
+
+   handleCollision(nave) {
+    // Restar una vida
+    this.vidas--;
+
+    // Destruir los meteoros y los disparos
+    this.scene.meteoroGroup.getChildren().forEach((meteoro) => {
+      meteoro.destroy();
+    });
+
+    // Comprobar si aún quedan vidas
+    if (this.vidas > 0) {
+      // Hacer parpadear la nave
+      this.blinkNave();
+
+      // Esperar 2 segundos antes de permitir otra colisión
+      this.scene.time.delayedCall(2000, () => {
+        // Hacer visible la nave nuevamente
+        nave.setActive(true);
+        nave.setVisible(true);
+      }, this);
+    } else {
+      // No quedan vidas, finalizar el juego
+      this.GameOver();
+    }
+  } 
+
+  blinkNave() {
+    const nave = this.nave;
+    nave.setVisible(false);
+
+    const blinkInterval = setInterval(() => {
+      nave.setVisible(!nave.visible);
+    }, 200);
+
+    this.scene.time.delayedCall(2000, () => {
+      clearInterval(blinkInterval);
+      nave.setVisible(true);
+    }, this);
+  }
+
+  gameOver() {
+    if (this.vidas <= 0) {
+    this.scene.start('gameOver');}
   }
 }
 
 export default class Nivel2 extends Phaser.Scene {
   constructor() {
     super('nivel2');
+    this.vidas = 3;
   }
 
   create() {
-    // Carga el mapa del tilemap JSON
-    const map = this.make.tilemap({ key: 'Nivel1' });
-    const tileset = map.addTilesetImage('Escenario1', 'Escenario2');
-    map.createLayer('background', tileset, 0, 0);
-    const zoomFactor = 0.9; // Valor que determina el nivel de zoom (puedes ajustarlo según tus necesidades)
+    this.map = this.make.tilemap({ key: 'Nivel1' });
+    const tileset = this.map.addTilesetImage('Escenario1', 'Escenario2');
+    this.map.createLayer('background', tileset, 0, 0);
+
+    const zoomFactor = 0.9;
     this.cameras.main.setZoom(zoomFactor);
-    // Ajusta el tamaño del mundo al tamaño del mapa
-    const { widthInPixels, heightInPixels } = map;
+
+    const { widthInPixels, heightInPixels } = this.map;
     this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
-    const yOffset = 0; // Valor que determina la cantidad de desplazamiento vertical (puedes ajustarlo según tus necesidades)
+
+    const yOffset = 0;
     this.cameras.main.setScroll(0, yOffset);
 
-    // Crea la nave en la posición deseada
     const naveX = 163.333333333333;
     const naveY = 510.666666666667;
-    this.nave = new Nave(this, naveX, naveY);
+
+    // Crear el grupo de meteoros
+    this.meteoroGroup = this.physics.add.group();
+
+    this.nave = new Nave(this, naveX, naveY, this.meteoroGroup);
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
-    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setScroll(0, 40);
-    // Configura la velocidad de desplazamiento del mapa
-    const mapSpeed = 0; // Velocidad en píxeles por segundo
+
+    const mapSpeed = 0;
 
     this.time.addEvent({
-      delay: 16, // Actualiza el mapa cada 16 milisegundos (aproximadamente 60 cuadros por segundo)
+      delay: 16,
       loop: true,
       callback: () => {
-        map.tilePositionX += mapSpeed / 60; // Ajusta el desplazamiento en función del tiempo y la velocidad
+        this.map.tilePositionX += mapSpeed / 60;
       },
     });
+
+    const meteorLayer = this.map.getObjectLayer('objects');
+    meteorLayer.objects.forEach(meteoroObj => {
+      if (meteoroObj.name === 'meteoro') {
+        const meteoro = this.meteoroGroup.create(meteoroObj.x, meteoroObj.y, 'meteorito');
+        meteoro.setOrigin(0.5);
+        const velocidadAleatoria = Phaser.Math.Between(200, 600);
+        meteoro.body.setVelocityX(-velocidadAleatoria);
+      }
+    });
+
+    // Colisión entre la nave y los meteoros del grupo
+    this.physics.add.overlap(this.nave, this.meteoroGroup, this.nave.handleCollision, null, this.nave);
   }
 
   update(time) {
@@ -98,5 +160,6 @@ export default class Nivel2 extends Phaser.Scene {
     this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
   }
 }
+
     //Mejor funcion del mundo:
     //.setInteractive(this.imput.makePixelPerfect());

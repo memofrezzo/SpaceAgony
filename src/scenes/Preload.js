@@ -15,14 +15,29 @@ export default class Preload extends Phaser.Scene {
       this.load.image("Escenario2", "./public/images/Escenario2.png");
       this.load.image("Disparo", "./public/images/Disparo.png");
       this.load.image("VidaNave", "./public/images/VidaNave.png");
-      
-  
-  
-      this.load.image("salida", "./public/images/salida.png");
+      this.load.image("meteorito", "./public/images/Meteorito.png");
+      this.load.image("explosionNave", "./public/images/explosionNave.gif");
+      this.load.image("Logo", "./public/images/Logo.jpeg");
+      this.load.image("Github", "./public/images/Github.png");
+      this.load.image("Estrella", "./public/images/Estrella.png");
+      this.load.image("Circulo", "./public/images/circulo.png");
+      this.load.image("Controls", "./public/images/Controls.png");
+      this.load.image("Donaciones", "./public/images/Donaciones.png");
+      this.load.spritesheet("explosionMeteorito", "./assets/images/explosionMeteorito.png", {
+        frameWidth: 218,
+        frameHeight: 164,
+      });
     }
   
     create() {  
       // init scene juego
-      this.scene.start("nivel2");
+      this.anims.create({
+        key: "explosion",
+        frames: this.anims.generateFrameNumbers("explosionMeteorito", { start: 0, end: 32 }),
+        frameRate: 30,
+        repeat: 0,
+        hideOnComplete: false,
+      });
+      this.scene.start("MenuScene");
     }
   }
