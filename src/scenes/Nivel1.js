@@ -118,26 +118,38 @@ export default class Nivel1 extends Phaser.Scene {
     this.isNextLevelEnabled = false;
   }
   create() {
+    const music = this.sound.add('musica1', {
+      loop: true
+    });
+    music.play();
+    
+    this.musicOff = this.physics.add.sprite(1400, 20, 'Estrella').setInteractive(); //No puse el logo de la música porque no lo terminé
+    this.musicOff.setScale(0.5);
+    this.musicOff.setDepth(1);
+    this.musicOff.setVelocityX(300);
+  
+    const pauseResumeMusic = () => {
+      if (music.isPlaying) {
+        music.pause();
+        this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
+      } else {
+        music.resume();
+        this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
+      }
+    };
+  
+    this.musicOff.on('pointerdown', pauseResumeMusic);
+  
+    // Manejo de eventos del teclado
+    this.input.keyboard.on('keydown-M', () => {
+      pauseResumeMusic();
+    });
+  
      // Crear el grupo de meteoros
   this.meteoroGroup = this.physics.add.group({
     defaultKey: 'meteorito',
     maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
   });
-    //Mutear música
-    let isMusicMuted = false;
-    let musicOn = this.add.image(0, 0, "musicOn").setInteractive().setDepth(1);
-
-    musicOn.on("pointerdown", () => {
-      if (isMusicMuted){
-        // music.play();
-        musicOn.setTexture("musicOn");
-        isMusicMuted = false;
-      } else {
-        //music.pause();
-        musicOn.setTexture("musicOff");
-        isMusicMuted = true;
-      }
-    });
 
     this.map = this.make.tilemap({ key: 'Nivel1' });
     const tileset = this.map.addTilesetImage('Escenario1', 'Escenario1');
@@ -165,6 +177,13 @@ export default class Nivel1 extends Phaser.Scene {
     this.cameras.main.setScroll(0, 40);
 
     this.time.addEvent({
+      delay: 2000,
+      callback: this.agregarNube,
+      callbackScope: this,
+      loop: true
+    });
+
+    this.time.addEvent({
       delay: 1000,
       loop: true,
       callback: () => {
@@ -176,6 +195,19 @@ export default class Nivel1 extends Phaser.Scene {
     // Colisión entre la nave y los meteoros del grupo
     this.physics.add.overlap(this.nave, this.meteoroGroup, this.nave.handleCollision, null, this.nave);
   }
+
+  agregarCorazon() {
+    if (!this.pausado) {
+    const corazon = this.physics.add.sprite(
+       800,
+       Phaser.Math.Between(100, 500),
+       Phaser.Math.RND.pick("corazon")
+     );
+     corazon.body.setVelocityX(-200);
+     corazon.setSize(1, 1);
+     corazon.setDepth(0);
+   }
+   }
 
   generarImagen() {
     const camera = this.cameras.main;
