@@ -1,13 +1,13 @@
 class Nave extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, meteoroGroup) {
-    super(scene, x, y, 'nave');
+    super(scene, x, y, "nave");
 
     scene.add.existing(this);
     scene.physics.world.enable(this);
 
-    this.body.setGravityY(0);
+   // this.body.setGravityY(0);
     this.body.setCollideWorldBounds(true);
-    this.body.setVelocityX(300);
+    this.body.setVelocityX(3000);
     this.setScale(0.45);
 
     this.isShooting = false;
@@ -16,7 +16,15 @@ class Nave extends Phaser.GameObjects.Sprite {
 
     this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
   }
-    
+  init() {
+    this.vidas = 3;
+  }
+  create() {
+    this.nave = this.physics.add.sprite(163.33333333, 510.666666666, "nave");
+    this.nave.body.allowGravity = false;
+    this.nave.setCollideWorldBounds(true);
+  }
+
   update(time) {
     const teclas = this.scene.input.keyboard.createCursorKeys();
     const camera = this.scene.cameras.main;
@@ -52,24 +60,13 @@ class Nave extends Phaser.GameObjects.Sprite {
       },
     });
   }
-
-  handleCollision() {
+  handleCollision(nave, meteoro) {
     // Restar una vida
     this.vidas--;
   
-    // Destruir los meteoros y los disparos
-    this.scene.meteoroGroup.getChildren().forEach((meteoro) => {
-      // Crear una animación de explosión en la posición del meteorito
-      const explosion = this.scene.add.sprite(meteoro.x, meteoro.y, 'explosionMeteorito');
-      explosion.play('explosion', true);
-      explosion.on('animationcomplete', () => {
-        explosion.destroy(); // Eliminar la animación de explosión cuando se complete
-      });
-  
-      // Ocultar y desactivar el meteorito en lugar de destruirlo
-      meteoro.setVisible(false);
-      meteoro.setActive(false);
-    });
+    // Ocultar y desactivar el meteoro colisionado
+    meteoro.setVisible(false);
+    meteoro.setActive(false);
   
     // Comprobar si aún quedan vidas
     if (this.vidas > 0) {
@@ -79,12 +76,9 @@ class Nave extends Phaser.GameObjects.Sprite {
       // Esperar 2 segundos antes de permitir otra colisión
       this.scene.time.delayedCall(2000, () => {
         // Hacer visible la nave nuevamente
-        this.setActive(true);
-        this.setVisible(true);
+        nave.setActive(true);
+        nave.setVisible(true);
       }, this);
-    } else {
-      // No quedan vidas, finalizar el juego
-      this.gameOver();
     }
   }
 
@@ -114,9 +108,9 @@ export default class Nivel1 extends Phaser.Scene {
   }
   init() {
     this.playerSurvived = false;
-    this.Vidas = 3;
     this.isNextLevelEnabled = false;
   }
+  
   create() {
     const music = this.sound.add('musica1', {
       loop: true
@@ -178,7 +172,7 @@ export default class Nivel1 extends Phaser.Scene {
 
     this.time.addEvent({
       delay: 2000,
-      callback: this.agregarNube,
+      callback: this.agregarCorazon,
       callbackScope: this,
       loop: true
     });
@@ -192,9 +186,27 @@ export default class Nivel1 extends Phaser.Scene {
       callbackScope: this
     });
   
+    //exit
+    const spawnPoint = this.map.findObject("objects", (obj) => obj.name === "exit");
+    console.log("spawn point salida ", spawnPoint);
+    if (spawnPoint){
+      this.exit = this.physics.add
+      .sprite(spawnPoint.x, spawnPoint.y, "Estrella") 
+      .setScale(1)
+      .setSize(40,1000);
+    }
+    this.physics.add.overlap(
+      this.nave,
+      this.exit,
+      this.esVencedor,
+      null,
+      this
+    );    
     // Colisión entre la nave y los meteoros del grupo
-    this.physics.add.overlap(this.nave, this.meteoroGroup, this.nave.handleCollision, null, this.nave);
+    this.physics.add.overlap(this.nave, this.meteoroGroup, this.nave.handleCollision, null, this);
   }
+
+  
 
   agregarCorazon() {
     if (!this.pausado) {
@@ -216,12 +228,16 @@ export default class Nivel1 extends Phaser.Scene {
     const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
     const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
   
-    const velocidadAleatoria = Phaser.Math.Between(200, 600); // Velocidad aleatoria entre 200 y 600
+    const velocidadAleatoria = Phaser.Math.Between(300, 550); // Velocidad aleatoria entre 200 y 600
     const sprite = this.meteoroGroup.create(x, y, 'meteorito');
     sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
   }
   
-
+  esVencedor() {
+    this.scene.start("Win"), {
+    };
+    
+  }
   update(time) {
     this.nave.update(time);
     const cameraOffsetX = -500; // Desplazamiento horizontal desde la posición de la nave

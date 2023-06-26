@@ -19,7 +19,7 @@ export default class MenuScene extends Phaser.Scene {
     });
 
     logo.on('pointerup', function () {
-      this.scene.start('Nivel1'); 
+      this.scene.start('nivel2'); 
     }, this);
 
     //controles
@@ -39,15 +39,6 @@ export default class MenuScene extends Phaser.Scene {
         // Acción al hacer clic en el icono de GitHub
         window.open('https://memofrezzo.github.io/Portfolio-2023-Alain/', '_blank');
       });
-
-      let Circulo = this.add.image(this.cameras.main.centerX +400, this.cameras.main.centerY + 250, 'Circulo').setOrigin(0.5);
-      Circulo.setInteractive();
-      Circulo.on('pointerover', function () {
-        Circulo.setScale(1.2);
-      });
-
-      Circulo.on('pointerout', function () {
-        Circulo.setScale(1);});
     
       //Donaciones
       let Donaciones = this.add.image(this.cameras.main.centerX +400, this.cameras.main.centerY + 250, 'Donaciones').setOrigin(0.5);
