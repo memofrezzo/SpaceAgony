@@ -117,14 +117,14 @@ export default class Nivel1 extends Phaser.Scene {
     });
     music.play();
     
-    this.musicOff = this.physics.add.sprite(1400, 20, 'Estrella').setInteractive(); //No puse el logo de la música porque no lo terminé
-    this.musicOff.setScale(0.5);
+    this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
+    this.musicOff.setScale(0.1);
     this.musicOff.setDepth(1);
     this.musicOff.setVelocityX(300);
   
     const pauseResumeMusic = () => {
       if (music.isPlaying) {
-        music.pause();
+        music.pause();S
         this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
       } else {
         music.resume();
