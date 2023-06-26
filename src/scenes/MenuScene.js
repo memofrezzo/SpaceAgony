@@ -19,7 +19,7 @@ export default class MenuScene extends Phaser.Scene {
     });
 
     logo.on('pointerup', function () {
-      this.scene.start('nivel2'); 
+      this.scene.start('Nivel1'); 
     }, this);
 
     //controles
@@ -46,28 +46,12 @@ export default class MenuScene extends Phaser.Scene {
       Donaciones.on('pointerover', function () {
         Donaciones.setScale(1.2);
       });
+
       Donaciones.on('pointerout', function () {
-        Donaciones.setScale(1);});
-      
-      }    
+          Donaciones.setScale(1);});
 
-  startGame() {
-    // Aquí puedes cargar la escena del juego principal
-  }
-
-  showOptions() {
-    // Aquí puedes cargar la escena de opciones
-  }
-
-  showCredits() {
-    // Aquí puedes cargar la escena de créditos
-  }
-
-  openGitHub() {
-    window.open('https://memofrezzo.github.io/Portfolio-2023-Alain/', '_blank');
-  }
-
-  showControls() {
-    // Aquí puedes mostrar los controles del juego
-  }
+      Donaciones.on('pointerup', function () {
+        window.open('https://memofrezzo.github.io/Donations/', '_blank');
+      });    
+}
 }

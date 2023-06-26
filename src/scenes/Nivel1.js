@@ -7,7 +7,7 @@ class Nave extends Phaser.GameObjects.Sprite {
 
    // this.body.setGravityY(0);
     this.body.setCollideWorldBounds(true);
-    this.body.setVelocityX(3000);
+    this.body.setVelocityX(300);
     this.setScale(0.45);
 
     this.isShooting = false;

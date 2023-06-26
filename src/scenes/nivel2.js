@@ -1,16 +1,13 @@
-export default class nivel2 extends Phaser.Scene {
+export default class Nivel2 extends Phaser.Scene {
   constructor() {
     super('nivel2');
   }
-  init() {
-    this.playerSurvived = false;
-    this.isNextLevelEnabled = false;
-  }
-  
+
   create() {
-    this.nave = this.physics.add.sprite(163, 511, "nave");
+    this.teclas = this.input.keyboard.createCursorKeys();
+    this.camera = this.cameras.main;
+    this.nave = this.physics.add.sprite(163, 511, "nave").setDepth(2);
     this.nave.body.allowGravity = false;
-    this.nave.setCollideWorldBounds(true);
     this.nave.setCollideWorldBounds(true);
     this.nave.setVelocityX(3000);
     this.nave.setScale(0.45);
@@ -23,29 +20,29 @@ export default class nivel2 extends Phaser.Scene {
       loop: true
     });
     music.play();
-    
-    this.musicOff = this.physics.add.sprite(1400, 20, 'Estrella').setInteractive(); //No puse el logo de la música porque no lo terminé
+
+    this.musicOff = this.physics.add.sprite(1400, 20, 'Estrella').setInteractive();
     this.musicOff.setScale(0.5);
     this.musicOff.setDepth(1);
     this.musicOff.setVelocityX(300);
-  
+
     const pauseResumeMusic = () => {
       if (music.isPlaying) {
         music.pause();
-        this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
+        this.musicOff.setTint(0xff0000);
       } else {
         music.resume();
-        this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
+        this.musicOff.clearTint();
       }
     };
-  
+
     this.musicOff.on('pointerdown', pauseResumeMusic);
-  
-    // Manejo de eventos del teclado
+
     this.input.keyboard.on('keydown-M', () => {
       pauseResumeMusic();
     });
-this.map = this.make.tilemap({ key: 'Nivel1' });
+
+    this.map = this.make.tilemap({ key: 'Nivel1' });
     const tileset = this.map.addTilesetImage('Escenario1', 'Escenario1');
     this.map.createLayer('background', tileset, 0, 0);
 
@@ -53,135 +50,89 @@ this.map = this.make.tilemap({ key: 'Nivel1' });
     this.cameras.main.setZoom(zoomFactor);
 
     const { widthInPixels, heightInPixels } = this.map;
-    this.physics.world.setBounds(0,0,widthInPixels, heightInPixels);
+    this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
 
     const yOffset = 0;
     this.cameras.main.setScroll(0, yOffset);
 
-this.cameras.main.startFollow(this.nave);
+    this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
     this.cameras.main.setScroll(0, 40);
-    
-this.time.addEvent({
-  delay: 1000,
-  loop: true,
-  callback: () => {
-    this.generarImagen();
-  },
-  callbackScope: this
-});
-//exit
-const spawnPoint = this.map.findObject("objects", (obj) => obj.name === "exit");
-console.log("spawn point salida ", spawnPoint);
-if (spawnPoint){
-  this.exit = this.physics.add
-  .sprite(spawnPoint.x, spawnPoint.y, "Estrella") 
-  .setScale(1)
-  .setSize(40,1000);
-}
-this.physics.add.overlap(
-  this.nave,
-  this.exit,
-  this.esVencedor,
-  null,
-  this
-);
-}
-shoot() {
-  // Crear y configurar el disparo
-  const disparo = this.scene.physics.add.sprite(this.x + 15, this.y + 1, 'Disparo');
-  disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
-  disparo.setScale(0.3);
 
-  // Destrucción el disparo después de cierto tiempo para evitar la acumulación de disparos en el mundo
-  this.scene.time.addEvent({
-    delay: 2000, // Tiempo en milisegundos antes de destruir el disparo
-    callback: () => {
-      disparo.destroy();
-    },
-  });
-}
-handleCollision(nave, meteoro) {
-  // Restar una vida
-  this.vidas--;
+    this.time.addEvent({
+      delay: 1000,
+      loop: true,
+      callback: () => {
+        this.generarImagen();
+      },
+      callbackScope: this
+    });
 
-  // Ocultar y desactivar el meteoro colisionado
-  meteoro.setVisible(false);
-  meteoro.setActive(false);
-
-  // Comprobar si aún quedan vidas
-  if (this.vidas > 0) {
-    // Hacer parpadear la nave
-    this.blinkNave();
-
-    // Esperar 2 segundos antes de permitir otra colisión
-    this.scene.time.delayedCall(2000, () => {
-      // Hacer visible la nave nuevamente
-      nave.setActive(true);
-      nave.setVisible(true);
-    }, this);
-  }
-}
-
-blinkNave() {
-  const nave = this.nave;
-  nave.setVisible(false);
-
-  const blinkInterval = setInterval(() => {
-    nave.setVisible(!nave.visible);
-  }, 200);
-
-  this.scene.time.delayedCall(2000, () => {
-    clearInterval(blinkInterval);
-    nave.setVisible(true);
-  }, this);
-}
-
-gameOver() {
-  if (this.vidas <= 0) {
-  this.scene.start('nivel2');}
-}   
-
-generarImagen() {
-  const camera = this.cameras.main;
-  const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
-
-  const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
-  const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
-
-  const velocidadAleatoria = Phaser.Math.Between(300, 550); // Velocidad aleatoria entre 200 y 600
-  const sprite = this.meteoroGroup.create(x, y, 'meteorito');
-  sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
-}
-
-esVencedor() {
-  this.scene.start("Win");
-}
-update(time) {
-  const teclas = this.scene.input.keyboard.createCursorKeys();
-  const camera = this.scene.cameras.main;
-
-  if (teclas.up.isDown && this.y > camera.y) {
-    this.body.velocity.y = -400; // Velocidad hacia arriba
-  } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
-    this.body.velocity.y = 400; // Velocidad hacia abajo
-  } else {
-    this.body.velocity.y = 0;
-  }
-
-  if (teclas.space.isDown) {
-    // Verificación del tiempo suficiente desde el último disparo
-    if (time > this.lastShootTime + this.shootDelay) {
-      this.shoot();
-      this.lastShootTime = time;
+    const spawnPoint = this.map.findObject("objects", (obj) => obj.name === "exit");
+    console.log("spawn point salida ", spawnPoint);
+    if (spawnPoint) {
+      this.exit = this.physics.add
+        .sprite(spawnPoint.x, spawnPoint.y, "Estrella")
+        .setScale(1)
+        .setSize(40, 1000);
     }
+    this.physics.add.overlap(
+      this.nave,
+      this.exit,
+      this.esVencedor,
+      null,
+      this
+    );
   }
-  this.nave.update(time);
-  const cameraOffsetX = -500; // Desplazamiento horizontal desde la posición de la nave
-  const cameraOffsetY = 0; // Desplazamiento vertical desde la posición de la nave
-  this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
-}
-}
 
-    //Mejor funcion del mundo:
-    //.setInteractive(this.imput.makePixelPerfect());
+  update(time) {
+    if (this.teclas.up.isDown && this.nave.y > this.camera.y) {
+      this.nave.y -= 4; // Velocidad hacia arriba
+    } else if (this.teclas.down.isDown && this.nave.y < this.camera.y + this.camera.height) {
+      this.nave.y += 4; // Velocidad hacia abajo
+    }
+
+    if (this.teclas.space.isDown) {
+      if (!this.isShooting && time > this.lastShootTime + this.shootDelay) {
+        this.shoot();
+        this.lastShootTime = time;
+      }
+    }
+
+    const cameraOffsetX = -500;
+    const cameraOffsetY = 0;
+    this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
+  }
+
+  shoot() {
+    const disparo = this.physics.add.sprite(this.nave.x + 15, this.nave.y + 1, 'Disparo').setDepth(2);
+    disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
+    disparo.setScale(0.3);
+
+    this.isShooting = true;
+
+    this.time.addEvent({
+      delay: 2000,
+      callback: () => {
+        disparo.destroy();
+        this.isShooting = false;
+      },
+    });
+  }
+
+  generarImagen() {
+    const camera = this.cameras.main;
+    const offsetX = 100;
+
+    const x = camera.scrollX + camera.width + offsetX;
+    const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height);
+
+    const velocidadAleatoria = Phaser.Math.Between(300, 550);
+    const sprite = this.physics.add.image(x, y, 'meteorito');
+    sprite.setVelocityX(-velocidadAleatoria);
+  }
+
+  esVencedor() {
+    this.scene.start("Win");
+  }
+}
