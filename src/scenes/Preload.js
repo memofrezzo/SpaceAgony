@@ -23,23 +23,33 @@ export default class Preload extends Phaser.Scene {
       this.load.image("Estrella", "./public/images/Estrella.png");
       this.load.image("Circulo", "./public/images/circulo.png");
       this.load.image("Controls", "./public/images/Controls.png");
+      this.load.image("corazon", "./public/images/Corazon.png");
       this.load.image("Donaciones", "./public/images/Donaciones.png");
       this.load.image("musicaLogo", "./public/images/musicaLogo.png");
       this.load.image("mapa", "./public/images/mapa.png");
-      this.load.spritesheet("explosionNave", "./public/images/explosionNave.png"); {
-      }
-       this.load.spritesheet("explosionMeteorito", "./assets/images/explosionMeteorito.png", {
+      this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
+        frameWidth: 156,
+        frameHeight: 228
+      });
+       this.load.spritesheet("ExplosionMeteorito", "./assets/images/ExplosionMeteorito.png", {
         frameWidth: 218,
         frameHeight: 164,
       }); 
     }
   
     create() {
-      // init scene juego
-       this.anims.create({
-        key: "Explosion",
-        frames: this.anims.generateFrameNumbers("explosionMeteorito", { start: 0, end: 32 }),
-        frameRate: 30,
+      this.anims.create({
+        key: "ExplosionNave",
+        frames: this.anims.generateFrameNumbers("ExplosionNave", { start: 0, end: 18 }),
+        frameRate: 18,
+        repeat: 0,
+        hideOnComplete: false,
+      });
+      
+      this.anims.create({
+        key: "ExplosionMeteorito",
+        frames: this.anims.generateFrameNumbers("ExplosionMeteorito", { start: 10, end: 28 }),
+        frameRate: 18,
         repeat: 0,
         hideOnComplete: false,
       });

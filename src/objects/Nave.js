@@ -1,5 +1,5 @@
 export default class Nave extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, meteoroGroup) {
+    constructor(scene, x, y, meteoroGroup, corazonGroup) {
       super(scene, x, y, "nave");
   
       scene.add.existing(this);
@@ -13,7 +13,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.isShooting = false;
       this.shootDelay = 300;
       this.lastShootTime = 400;
-  
+      this.corazonGroup = corazonGroup; 
       this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
     }
 
@@ -42,7 +42,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
   
     shoot() {
       // Crear y configurar el disparo
-      const disparo = this.scene.physics.add.sprite(this.x + 15, this.y + 1, 'Disparo');
+      const disparo = this.scene.disparoGroup.create(this.x + 15, this.y + 1, 'Disparo');
       disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
       disparo.setScale(0.3);
   

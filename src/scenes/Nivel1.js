@@ -15,7 +15,7 @@ export default class Nivel1 extends Phaser.Scene {
       loop: true
     });
     music.play();
-    
+    this.disparoGroup = this.physics.add.group();
     this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
     this.musicOff.setScale(0.1);
     this.musicOff.setDepth(1);
@@ -23,7 +23,7 @@ export default class Nivel1 extends Phaser.Scene {
   
     const pauseResumeMusic = () => {
       if (music.isPlaying) {
-        music.pause();S
+        music.pause();
         this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
       } else {
         music.resume();
@@ -39,6 +39,14 @@ export default class Nivel1 extends Phaser.Scene {
     });
   
      // Crear el grupo de meteoros
+     this.disparoGroup= this.physics.add.group({
+      defaultKey: 'disparo',
+      maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
+    });
+     this.corazonGroup = this.physics.add.group({
+      defaultKey: 'corazon',
+      maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
+    });
   this.meteoroGroup = this.physics.add.group({
     defaultKey: 'meteorito',
     maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
@@ -62,8 +70,9 @@ export default class Nivel1 extends Phaser.Scene {
 
     // Crear el grupo de meteoros
     this.meteoroGroup = this.physics.add.group();
+    this.corazonGroup = this.physics.add.group();
 
-    this.nave = new Nave(this, naveX, naveY, this.meteoroGroup);
+    this.nave = new Nave(this, naveX, naveY, this.meteoroGroup, this.corazonGroup);
     this.meteoritoSpawnTimer = 0;
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
@@ -75,7 +84,14 @@ export default class Nivel1 extends Phaser.Scene {
       callbackScope: this,
       loop: true
     });
-
+    this.time.addEvent({
+      delay: 5000,
+      loop: true,
+      callback: () => {
+        this.generarCorazon();
+      },
+      callbackScope: this
+    });
     this.time.addEvent({
       delay: 1000,
       loop: true,
@@ -103,22 +119,21 @@ export default class Nivel1 extends Phaser.Scene {
     );    
     // Colisión entre la nave y los meteoros del grupo
     this.physics.add.overlap(this.nave, this.meteoroGroup, this.handleCollision, null, this);
-  }
+    this.physics.add.overlap(this.nave, this.corazonGroup, this.handleCollision, null, this);
+    this.physics.add.overlap(this.disparoGroup, this.meteoroGroup, this.handleCollision, null, this);
+    }
 
+   generarCorazon() {
+    const camera = this.cameras.main;
+    const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
   
-
-  agregarCorazon() {
-    if (!this.pausado) {
-    const corazon = this.physics.add.sprite(
-       800,
-       Phaser.Math.Between(100, 500),
-       Phaser.Math.RND.pick("corazon")
-     );
-     corazon.body.setVelocityX(-200);
-     corazon.setSize(1, 1);
-     corazon.setDepth(0);
-   }
-   }
+    const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
+    const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
+  
+    const velocidadAleatoria = Phaser.Math.Between(200, 300); // Velocidad aleatoria entre 200 y 600
+    const sprite = this.corazonGroup.create(x, y, 'corazon').setDepth(2);
+    sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
+  }
 
   generarImagen() {
     const camera = this.cameras.main;
@@ -127,8 +142,8 @@ export default class Nivel1 extends Phaser.Scene {
     const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
     const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
   
-    const velocidadAleatoria = Phaser.Math.Between(300, 550); // Velocidad aleatoria entre 200 y 600
-    const sprite = this.meteoroGroup.create(x, y, 'meteorito');
+    const velocidadAleatoria = Phaser.Math.Between(300, 500); // Velocidad aleatoria entre 200 y 600
+    const sprite = this.meteoroGroup.create(x, y, 'meteorito').setScale(0.9);
     sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
   }
   
@@ -144,33 +159,50 @@ export default class Nivel1 extends Phaser.Scene {
     const cameraOffsetY = 0; // Desplazamiento vertical desde la posición de la nave
     this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
   }
-
-  handleCollision(nave, meteoro) {
-    console.log('Colisión con meteoro')
-    // Restar una vida
-    this.vidas--;
-  
-    // Ocultar y desactivar el meteoro colisionado
-    meteoro.disableBody(true, true);
-  
-    // Comprobar si aún quedan vidas
-    if (this.vidas > 0) {
-      // Hacer parpadear la nave
-      this.nave.blinkNave();
-  
-      // Esperar 2 segundos antes de permitir otra colisión
-      this.time.delayedCall(2000, () => {
-        // Hacer visible la nave nuevamente
-        this.nave.setActive(true);
-        this.nave.setVisible(true);
-      }, this);
-    } else {
-      this.gameOver();
+  handleCollision(nave, objeto) {
+    if (objeto.texture.key === 'corazon') {
+      // Sumar una vida
+      this.vidas++;
+      // Ocultar y desactivar el corazón colisionado
+      objeto.disableBody(true, true);
+      // Salir de la función, ya que no es necesario hacer más acciones
+      return;
     }
+  
+    if (objeto.texture.key === 'meteorito') {
+      console.log('Colisión con meteoro');
+      this.vidas--;
+      objeto.disableBody(true, true);
+      if (this.vidas > 0) {
+        // Hacer parpadear la nave
+        this.nave.blinkNave();
+  
+        // Esperar 2 segundos antes de permitir otra colisión
+        this.time.delayedCall(2000, () => {
+          // Hacer visible la nave nuevamente
+          this.nave.setActive(true);
+          this.nave.setVisible(true);
+        }, this);
+      } else {
+        this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
+        this.time.delayedCall(2000, () => {
+          this.gameOver();
+        }, this);
+      }
+      }
+      // Verificar si el objeto colisionado es un disparo
+      if (objeto.texture.key === 'Disparo') {
+        // Ocultar y desactivar el disparo colisionado
+        objeto.disableBody(true, true);
+        // Salir de la función, ya que no es necesario hacer más acciones
+        return;
+      }
   }
+  
+  
 
   gameOver() {
-    this.scene.start('nivel2');
+    this.scene.start('GameOver');
   }
   
 }
