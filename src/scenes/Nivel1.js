@@ -106,7 +106,7 @@ export default class Nivel1 extends Phaser.Scene {
     console.log("spawn point salida ", spawnPoint);
     if (spawnPoint){
       this.exit = this.physics.add
-      .sprite(spawnPoint.x, spawnPoint.y, "Estrella") 
+      .sprite(20500, spawnPoint.y, "Estrella") 
       .setScale(1)
       .setSize(40,1000);
     }
@@ -120,9 +120,15 @@ export default class Nivel1 extends Phaser.Scene {
     // Colisión entre la nave y los meteoros del grupo
     this.physics.add.overlap(this.nave, this.meteoroGroup, this.handleCollision, null, this);
     this.physics.add.overlap(this.nave, this.corazonGroup, this.handleCollision, null, this);
-    this.physics.add.overlap(this.disparoGroup, this.meteoroGroup, this.handleCollision, null, this);
+    this.physics.add.overlap(this.disparoGroup, this.meteoroGroup, this.handleDisparoCollision, null, this);
     }
 
+    handleDisparoCollision(disparo, meteoro) {
+      // Aquí puedes definir cómo se maneja la colisión entre un disparo y un meteoro
+      // Por ejemplo, puedes desactivar y ocultar ambos objetos
+      disparo.disableBody(true, true);
+      meteoro.disableBody(true, true);
+    }
    generarCorazon() {
     const camera = this.cameras.main;
     const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
@@ -148,10 +154,9 @@ export default class Nivel1 extends Phaser.Scene {
   }
   
   esVencedor() {
-    this.scene.start("Win"), {
-    };
-    
-  }
+    this.scene.start("Win");
+    this.music1.stop();
+    }
 
   update(time) {
     this.nave.update(time);
@@ -160,44 +165,43 @@ export default class Nivel1 extends Phaser.Scene {
     this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
   }
   handleCollision(nave, objeto) {
-    if (objeto.texture.key === 'corazon') {
-      // Sumar una vida
-      this.vidas++;
-      // Ocultar y desactivar el corazón colisionado
-      objeto.disableBody(true, true);
-      // Salir de la función, ya que no es necesario hacer más acciones
-      return;
-    }
-  
-    if (objeto.texture.key === 'meteorito') {
-      console.log('Colisión con meteoro');
-      this.vidas--;
-      objeto.disableBody(true, true);
-      if (this.vidas > 0) {
-        // Hacer parpadear la nave
-        this.nave.blinkNave();
-  
-        // Esperar 2 segundos antes de permitir otra colisión
-        this.time.delayedCall(2000, () => {
-          // Hacer visible la nave nuevamente
-          this.nave.setActive(true);
-          this.nave.setVisible(true);
-        }, this);
-      } else {
-        this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
-        this.time.delayedCall(2000, () => {
-          this.gameOver();
-        }, this);
-      }
-      }
-      // Verificar si el objeto colisionado es un disparo
-      if (objeto.texture.key === 'Disparo') {
-        // Ocultar y desactivar el disparo colisionado
-        objeto.disableBody(true, true);
-        // Salir de la función, ya que no es necesario hacer más acciones
-        return;
-      }
+  if (objeto.texture.key === 'corazon') {
+    // Sumar una vida
+    this.vidas++;
+    // Ocultar y desactivar el corazón colisionado
+    objeto.disableBody(true, true);
+    // Salir de la función, ya que no es necesario hacer más acciones
+    return;
   }
+
+  if (objeto.texture.key === 'meteorito') {
+    console.log('Colisión con meteoro');
+    this.vidas--;
+    objeto.disableBody(true, true);
+    if (this.vidas > 0) {
+      // Hacer parpadear la nave
+      this.nave.blinkNave();
+
+      // Esperar 2 segundos antes de permitir otra colisión
+      this.time.delayedCall(2000, () => {
+        // Hacer visible la nave nuevamente
+        this.nave.setActive(true);
+        this.nave.setVisible(true);
+      }, this);
+    } else {
+      this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
+      this.time.delayedCall(2000, () => {
+        this.gameOver();
+      }, this);
+    }
+  }
+
+  // Verificar si el objeto colisionado es un disparo
+  if (objeto.texture.key === 'Disparo') {
+    // Salir de la función, ya que no es necesario hacer más acciones con los disparos
+    return;
+  }
+}
   
   gameOver() {
     this.scene.start('GameOver');

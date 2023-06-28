@@ -15,7 +15,12 @@ export default class Win extends Phaser.Scene {
       screenWidth / 2,
       screenHeight / 2 +200,
       "GANASTE!",
-      "Press R to restart",
+      { fontSize: "30px", fill: "#FF8000" }
+    ).setOrigin(0.5);
+    this.texto = this.add.text(
+      screenWidth / 2,
+      screenHeight / 2 +250,
+      "Presiona R para reiniciar",
       { fontSize: "30px", fill: "#FF8000" }
     ).setOrigin(0.5);
     }
