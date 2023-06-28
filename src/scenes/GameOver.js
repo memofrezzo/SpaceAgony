@@ -5,6 +5,9 @@
       }
       create (){
     this.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.lostMusic = this.sound.add("lostMusic");
+    this.lostMusic.play()
+    this.lostMusic.loop = false;
     const screenWidth = this.cameras.main.width;
     const screenHeight = this.cameras.main.height;
     this.imagenVictoria = this.add.image(screenWidth / 2, screenHeight / 2 , "restart").setScale(2);

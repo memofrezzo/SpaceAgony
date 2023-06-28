@@ -11,22 +11,22 @@ export default class Nivel1 extends Phaser.Scene {
   }
   
   create() {
-    const music = this.sound.add('musica1', {
-      loop: true
-    });
-    music.play();
+    this.music1 = this.sound.add('musica1');
+    this.music1.loop=true;
+    this.music1.play();
+    this.music1.setSeek(2);
     this.disparoGroup = this.physics.add.group();
     this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
     this.musicOff.setScale(0.1);
-    this.musicOff.setDepth(1);
+    this.musicOff.setDepth(2);
     this.musicOff.setVelocityX(300);
   
     const pauseResumeMusic = () => {
-      if (music.isPlaying) {
-        music.pause();
+      if (this.music1.isPlaying) {
+        this.music1.pause();
         this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
       } else {
-        music.resume();
+        this.music1.resume();
         this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
       }
     };
@@ -199,12 +199,10 @@ export default class Nivel1 extends Phaser.Scene {
       }
   }
   
-  
-
   gameOver() {
     this.scene.start('GameOver');
+    this.music1.stop();
   }
-  
 }
 
 

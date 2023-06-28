@@ -9,7 +9,6 @@ export default class Preload extends Phaser.Scene {
     preload() {
       // load assets
       this.load.tilemapTiledJSON("Nivel1", "./public/tilemaps/Nivel1.json");
-      this.load.audio("musica1", "./public/audio/musica1.wav");
       this.load.image("nave", "./public/images/Nave.png");
       this.load.image("Nave2", "./public/images/Nave2.png");
       this.load.image("Escenario1", "./public/images/Escenario1.png");
@@ -36,7 +35,10 @@ export default class Preload extends Phaser.Scene {
         frameWidth: 218,
         frameHeight: 164,
       }); 
-    }
+      //Música
+      this.load.audio("lostMusic", "./public/audio/lostMusic.mp3");
+      this.load.audio("winMusic", "./public/audio/winMusic.mp3");
+ this.load.audio("musica1", "./public/audio/musica1.wav");    }
   
     create() {
       this.anims.create({
