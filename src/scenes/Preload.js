@@ -26,6 +26,7 @@ export default class Preload extends Phaser.Scene {
       this.load.image("corazon", "./public/images/Corazon.png");
       this.load.image("Donaciones", "./public/images/Donaciones.png");
       this.load.image("musicaLogo", "./public/images/musicaLogo.png");
+      this.load.image("restart", "./public/images/restart.png");
       this.load.image("mapa", "./public/images/mapa.png");
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
