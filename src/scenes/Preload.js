@@ -27,6 +27,9 @@ export default class Preload extends Phaser.Scene {
       this.load.image("musicaLogo", "./public/images/musicaLogo.png");
       this.load.image("restart", "./public/images/restart.png");
       this.load.image("mapa", "./public/images/mapa.png");
+      this.load.image("bossFinal", "./public/images/BossFinal.png");
+      this.load.image("musicaOff", "./public/images/musicaOff.png");
+      this.load.image("corazonSinVida", "./public/images/CorazonSinVida.png");
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
         frameHeight: 228
@@ -38,7 +41,9 @@ export default class Preload extends Phaser.Scene {
       //Música
       this.load.audio("lostMusic", "./public/audio/lostMusic.mp3");
       this.load.audio("winMusic", "./public/audio/winMusic.mp3");
- this.load.audio("musica1", "./public/audio/musica1.wav");    }
+      this.load.audio("musica1", "./public/audio/musica1.wav");  
+      this.load.audio("selectOption", "./public/audio/selectOption.mp3");
+    }
   
     create() {
       this.anims.create({

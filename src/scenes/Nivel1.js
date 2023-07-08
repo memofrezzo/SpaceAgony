@@ -11,6 +11,17 @@ export default class Nivel1 extends Phaser.Scene {
   }
   
   create() {
+    this.vidasContainer = this.add.container(0, 0);
+    this.vidasContainer.setScrollFactor(0);
+    this.vidasContainer.setDepth(2);
+
+    this.corazonImage = this.add.image(45, 5, 'corazon').setScale(0.5);
+    this.vidasText = this.add.text(0, -10, '', { fontFamily: 'Arial', fontSize: '24px', fill: '#ffffff' });
+    this.vidasText.setText(this.vidas.toString());
+
+    this.vidasContainer.add(this.corazonImage);
+    this.vidasContainer.add(this.vidasText);
+    
     this.music1 = this.sound.add('musica1');
     this.music1.loop=true;
     this.music1.play();
@@ -39,19 +50,6 @@ export default class Nivel1 extends Phaser.Scene {
     });
   
      // Crear el grupo de meteoros
-     this.disparoGroup= this.physics.add.group({
-      defaultKey: 'disparo',
-      maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
-    });
-     this.corazonGroup = this.physics.add.group({
-      defaultKey: 'corazon',
-      maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
-    });
-  this.meteoroGroup = this.physics.add.group({
-    defaultKey: 'meteorito',
-    maxSize: 10 // Establecer el tamaño máximo del grupo de meteoritos según tus necesidades
-  });
-
     this.map = this.make.tilemap({ key: 'Nivel1' });
     const tileset = this.map.addTilesetImage('Escenario1', 'Escenario1');
     this.map.createLayer('background', tileset, 0, 0);
@@ -170,6 +168,7 @@ export default class Nivel1 extends Phaser.Scene {
     this.vidas++;
     // Ocultar y desactivar el corazón colisionado
     objeto.disableBody(true, true);
+    this.vidasText.setText(this.vidas.toString());
     // Salir de la función, ya que no es necesario hacer más acciones
     return;
   }
@@ -178,6 +177,7 @@ export default class Nivel1 extends Phaser.Scene {
     console.log('Colisión con meteoro');
     this.vidas--;
     objeto.disableBody(true, true);
+    this.vidasText.setText(this.vidas.toString());
     if (this.vidas > 0) {
       // Hacer parpadear la nave
       this.nave.blinkNave();
