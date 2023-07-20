@@ -7,7 +7,6 @@ export default class MenuScene extends Phaser.Scene {
 
     // Logo Principal
     const selectOptionSound = this.sound.add('selectOption');
-    selectOptionSound.setSeek(2);
     let logo = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY - 150, 'Logo').setOrigin(0.5);
     logo.setInteractive();
     
@@ -21,6 +20,7 @@ export default class MenuScene extends Phaser.Scene {
     });
 
     logo.on('pointerup', () => {
+      this.game.scale.startFullscreen();
       this.scene.start('Nivel1'); 
     });
 

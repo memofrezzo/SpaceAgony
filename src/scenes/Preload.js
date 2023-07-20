@@ -8,6 +8,9 @@ export default class Preload extends Phaser.Scene {
   
     preload() {
       // load assets
+      //video
+      this.load.video('presentacion', "./public/videos/videoPreload.mp4");
+      //rest of immages
       this.load.tilemapTiledJSON("Nivel1", "./public/tilemaps/Nivel1.json");
       this.load.image("nave", "./public/images/Nave.png");
       this.load.image("Nave2", "./public/images/Nave2.png");
@@ -30,6 +33,10 @@ export default class Preload extends Phaser.Scene {
       this.load.image("bossFinal", "./public/images/BossFinal.png");
       this.load.image("musicaOff", "./public/images/musicaOff.png");
       this.load.image("corazonSinVida", "./public/images/CorazonSinVida.png");
+      this.load.image("habilidad1", "./public/images/Habilidad1.png");
+      this.load.image("habilidad2", "./public/images/Habilidad2.png");
+      this.load.image("habilidad3", "./public/images/Habilidad3.png"); 
+      this.load.image("enemie", "./public/images/enemie1.png");
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
         frameHeight: 228
@@ -62,5 +69,18 @@ export default class Preload extends Phaser.Scene {
         hideOnComplete: false,
       });
       this.scene.start("MenuScene"); 
+//presentación video
+      let presentacion = this.add.video(0, 0, "presentacion").setOrigin(0).setInteractive(); 
+
+      presentacion.play();
+  
+      presentacion.on("complete", () => {
+        this.scene.start("MenuScene");
+      });
+  
+      presentacion.on("pointerdown", () => {
+        this.scene.start("Preload");
+      });
+
     }
   }

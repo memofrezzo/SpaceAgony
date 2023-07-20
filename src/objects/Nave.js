@@ -11,7 +11,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.setScale(0.45);
   
       this.isShooting = false;
-      this.shootDelay = 300;
+      this.shootDelay = 400;
       this.lastShootTime = 400;
       this.corazonGroup = corazonGroup; 
       this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
@@ -23,13 +23,32 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       const teclas = this.scene.input.keyboard.createCursorKeys();
       const camera = this.scene.cameras.main;
   
-      if (teclas.up.isDown && this.y > camera.y) {
-        this.body.velocity.y = -400; // Velocidad hacia arriba
-      } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
-        this.body.velocity.y = 400; // Velocidad hacia abajo
-      } else {
-        this.body.velocity.y = 0;
+      if (this.habilidad1Activa) {
+        // Velocidad más rápida cuando la habilidad1 está activa
+        if (teclas.up.isDown && this.y > camera.y) {
+          this.body.velocity.y = -600; // Velocidad hacia arriba más rápida
+        } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
+          this.body.velocity.y = 600; // Velocidad hacia abajo más rápida
+        } else {
+          this.body.velocity.y = 0;
+        }
+        if (teclas.space.isDown) {
+          // Verificación del tiempo suficiente desde el último disparo
+          if (time > this.lastShootTime + this.shootDelay) {
+            this.shoot();
+            this.lastShootTime = time;
+          }
+      } 
       }
+      else {
+        // Velocidad normal sin la habilidad1 activa
+        if (teclas.up.isDown && this.y > camera.y) {
+          this.body.velocity.y = -400; // Velocidad hacia arriba normal
+        } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
+          this.body.velocity.y = 400; // Velocidad hacia abajo normal
+        } else {
+          this.body.velocity.y = 0;
+        }
   
       if (teclas.space.isDown) {
         // Verificación del tiempo suficiente desde el último disparo
@@ -39,7 +58,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
         }
       }
     }
-  
+  }
     shoot() {
       // Crear y configurar el disparo
       const disparo = this.scene.disparoGroup.create(this.x + 15, this.y + 1, 'Disparo');
