@@ -275,7 +275,7 @@ export default class Nivel1 extends Phaser.Scene {
   }
   
   esVencedor() {
-    this.scene.start("Win");
+    this.scene.start("nivel2");
     this.music1.stop();
     }
 

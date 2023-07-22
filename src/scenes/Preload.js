@@ -30,21 +30,18 @@ export default class Preload extends Phaser.Scene {
       this.load.image("musicaLogo", "./public/images/musicaLogo.png");
       this.load.image("restart", "./public/images/restart.png");
       this.load.image("mapa", "./public/images/mapa.png");
-      this.load.image("bossFinal", "./public/images/BossFinal.png");
+      this.load.image("Enemie1", "./public/images/Enemie1.png");
       this.load.image("musicaOff", "./public/images/musicaOff.png");
       this.load.image("corazonSinVida", "./public/images/CorazonSinVida.png");
       this.load.image("habilidad1", "./public/images/Habilidad1.png");
       this.load.image("habilidad2", "./public/images/Habilidad2.png");
-      this.load.image("habilidad3", "./public/images/Habilidad3.png"); 
+      this.load.image("habilidad3", "./public/images/Habilidad3.png");
+      this.load.image("BossFinal", "./public/images/BossFinal.png"); 
       this.load.image("enemie", "./public/images/enemie1.png");
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
         frameHeight: 228
       });
-       this.load.spritesheet("ExplosionMeteorito", "./assets/images/ExplosionMeteorito.png", {
-        frameWidth: 218,
-        frameHeight: 164,
-      }); 
       //Música
       this.load.audio("lostMusic", "./public/audio/lostMusic.mp3");
       this.load.audio("winMusic", "./public/audio/winMusic.mp3");
@@ -60,15 +57,7 @@ export default class Preload extends Phaser.Scene {
         repeat: 0,
         hideOnComplete: false,
       });
-      
-      this.anims.create({
-        key: "ExplosionMeteorito",
-        frames: this.anims.generateFrameNumbers("ExplosionMeteorito", { start: 10, end: 28 }),
-        frameRate: 18,
-        repeat: 0,
-        hideOnComplete: false,
-      });
-      this.scene.start("MenuScene"); 
+      this.scene.start("nivel2"); 
 //presentación video
       let presentacion = this.add.video(0, 0, "presentacion").setOrigin(0).setInteractive(); 
 
