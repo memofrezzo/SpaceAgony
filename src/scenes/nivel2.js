@@ -284,7 +284,6 @@ export default class nivel2 extends Phaser.Scene {
     // Detener y eliminar todos los sonidos y música de la escena actual
     this.sound.stopAll();
     this.sound.removeAll();
-    this.music1.stop();
     this.FinalBoss.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
     this.time.delayedCall(2000, () => {
       this.scene.start("Win");
@@ -297,7 +296,6 @@ export default class nivel2 extends Phaser.Scene {
     this.sound.removeAll();
 
     this.scene.start('GameOver');
-    this.music1.stop();
   }
 
   update(time) {
