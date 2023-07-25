@@ -16,6 +16,11 @@ export default class nivel2 extends Phaser.Scene {
     this.vidasContainer = this.add.container(0, 0);
     this.vidasContainer.setScrollFactor(0);
     this.vidasContainer.setDepth(2);
+    this.musicBoss = this.sound.add('musicArcade');
+
+    if (this.vidas <= 0) { this.nave.on('muerteNave', () => {
+      this.gameOver(); // Llamar al método gameOver cuando la nave se quede sin vidas
+    });}
 
     this.corazonImage = this.add.image(45, 5, 'corazon').setScale(0.5);
     this.vidasText = this.add.text(0, -10, '', { fontFamily: 'Arial', fontSize: '24px', fill: '#ffffff' });
@@ -23,11 +28,6 @@ export default class nivel2 extends Phaser.Scene {
 
     this.vidasContainer.add(this.corazonImage);
     this.vidasContainer.add(this.vidasText);
-    
-    this.music1 = this.sound.add('musica1');
-    this.music1.loop=true;
-    this.music1.play();
-    this.music1.setSeek(2);
     this.disparoGroup = this.physics.add.group();
     this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
     this.musicOff.setScale(0.1);
@@ -35,11 +35,11 @@ export default class nivel2 extends Phaser.Scene {
     this.musicOff.setVelocityX(300);
   
     const pauseResumeMusic = () => {
-      if (this.music1.isPlaying) {
-        this.music1.pause();
+      if (this.musicBoss.isPlaying) {
+        this.musicBoss.pause();
         this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
       } else {
-        this.music1.resume();
+        this.musicBoss.resume();
         this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
       }
     };
@@ -279,13 +279,26 @@ export default class nivel2 extends Phaser.Scene {
     sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
   }
   
+  
   esVencedor() {
+    // Detener y eliminar todos los sonidos y música de la escena actual
+    this.sound.stopAll();
+    this.sound.removeAll();
+    this.music1.stop();
     this.FinalBoss.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
-      this.time.delayedCall(2000, () => {
-        this.scene.start("Win");
-        this.music1.stop();
-        }, this);
-    }
+    this.time.delayedCall(2000, () => {
+      this.scene.start("Win");
+    }, this);
+  }
+
+  gameOver() {
+    // Detener y eliminar todos los sonidos y música de la escena actual
+    this.sound.stopAll();
+    this.sound.removeAll();
+
+    this.scene.start('GameOver');
+    this.music1.stop();
+  }
 
   update(time) {
     this.nave.update(time);
@@ -349,6 +362,7 @@ export default class nivel2 extends Phaser.Scene {
     } else {
       this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
       this.time.delayedCall(2000, () => {
+         
         this.gameOver();
         }, this);
       }
@@ -358,15 +372,9 @@ export default class nivel2 extends Phaser.Scene {
   if (objeto.texture.key === 'Disparo') {
     // Salir de la función, ya que no es necesario hacer más acciones con los disparos
     return;
+    }
   }
 }
-  
-  gameOver() {
-    this.scene.start('GameOver');
-    this.music1.stop();
-  }
-}
-
 
 //Mejor funcion del mundo:
 //.setInteractive(this.imput.makePixelPerfect());

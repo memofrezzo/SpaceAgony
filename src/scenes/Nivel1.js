@@ -23,6 +23,8 @@ export default class Nivel1 extends Phaser.Scene {
     this.vidasContainer.add(this.vidasText);
     
     this.music1 = this.sound.add('musica1');
+    this.musicBoss = this.sound.add('musicArcade');
+
     this.music1.loop=true;
     this.music1.play();
     this.music1.setSeek(2);
@@ -275,6 +277,7 @@ export default class Nivel1 extends Phaser.Scene {
   }
   
   esVencedor() {
+    this.musicBoss.play();
     this.scene.start("nivel2");
     this.music1.stop();
     }

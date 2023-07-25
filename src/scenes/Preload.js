@@ -47,6 +47,11 @@ export default class Preload extends Phaser.Scene {
       this.load.audio("winMusic", "./public/audio/winMusic.mp3");
       this.load.audio("musica1", "./public/audio/musica1.wav");  
       this.load.audio("selectOption", "./public/audio/selectOption.mp3");
+      this.load.audio("habilidad1", "./public/audio/habilidad1.mp3");
+      this.load.audio("habilidad2", "./public/audio/habilidad2.mp3");
+      this.load.audio("shot", "./public/audio/Shot.mp3");
+      this.load.audio("finalBossMusic", "./public/audio/finalBossMusic.mp3");
+      this.load.audio("musicArcade", "./public/audio/musicArcade.mp3");
     }
   
     create() {
@@ -57,7 +62,7 @@ export default class Preload extends Phaser.Scene {
         repeat: 0,
         hideOnComplete: false,
       });
-      this.scene.start("nivel2"); 
+      this.scene.start("MenuScene"); 
 //presentación video
       let presentacion = this.add.video(0, 0, "presentacion").setOrigin(0).setInteractive(); 
 
@@ -68,7 +73,7 @@ export default class Preload extends Phaser.Scene {
       });
   
       presentacion.on("pointerdown", () => {
-        this.scene.start("Preload");
+        this.scene.start("MenuScene");
       });
 
     }

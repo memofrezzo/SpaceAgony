@@ -15,10 +15,12 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
     this.body.setCollideWorldBounds(true);
     this.followX = true;
     this.followY = true; // Agregar esta línea para que también siga a la nave en el eje Y
+    this.sound = scene.sound;
   }
 
   update(time) {
   this.x = nave.x - (camera.width / 2) + (this.width / 2);
+  this.updateBarPosition();
 
   // Seguir a la nave en Y
   this.y = nave.y;
@@ -31,7 +33,7 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
       this.y = this.scene.nave.y; // Corregir aquí, usar this.scene.nave.y
     }
 
-    this.updateBarPosition();
+    
     // Resto del código de actualización del jefe final
     // ...
   }
@@ -62,15 +64,14 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
 
   morir() {
     // Reproducir sonido
-    this.scene.sound.play('winMusic');
-  
     // Animación de explosión
     this.play('ExplosionNave');
     this.setScale(2); // Establecer la escala después de llamar a la animación
-  
+    
     // Esperar 2 segundos
     this.scene.time.delayedCall(2000, () => {
-  
+      this.sound.stopAll();
+      this.sound.removeAll();
       // Ir a pantalla de victoria
       this.scene.scene.start('Win');
   

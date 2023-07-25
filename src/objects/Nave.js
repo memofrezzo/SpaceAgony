@@ -9,12 +9,23 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.body.setCollideWorldBounds(true);
       this.body.setVelocityX(300);
       this.setScale(0.45);
-  
       this.isShooting = false;
       this.shootDelay = 400;
       this.lastShootTime = 400;
       this.corazonGroup = corazonGroup; 
       this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
+      this.on('muerteNave', () => {
+        this.desactivarNave();
+      });
+    }
+  
+    // Resto del código de la clase Nave
+  
+    restarVida() {
+      this.vidas--;
+      if (this.vidas <= 0) {
+        this.emit('muerteNave'); // Emitir el evento de muerte de la nave
+      }
     }
 
 
@@ -60,6 +71,8 @@ export default class Nave extends Phaser.GameObjects.Sprite {
     }
   }
     shoot() {
+      this.scene.sound.play('shot', { volume: 0.9 }); // Ajusta el volumen según tus necesidades
+
       // Crear y configurar el disparo
       const disparo = this.scene.disparoGroup.create(this.x + 15, this.y + 1, 'Disparo');
       disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
