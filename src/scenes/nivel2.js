@@ -310,7 +310,7 @@ export default class nivel2 extends Phaser.Scene {
   
     // Seguir a la nave en el eje Y
     if (this.FinalBoss.followY) {
-      const targetY = this.nave.y;
+        const targetY = this.nave.y;
       this.FinalBoss.y += (targetY - this.FinalBoss.y) * 0.08;
     }
   }

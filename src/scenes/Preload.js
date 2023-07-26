@@ -9,7 +9,7 @@ export default class Preload extends Phaser.Scene {
     preload() {
       // load assets
       //video
-      this.load.video('presentacion', "./public/videos/videoPreload.mp4");
+      this.load.video('presentacion', "./public/images/videoPreload.mp4");
       //rest of immages
       this.load.tilemapTiledJSON("Nivel1", "./public/tilemaps/Nivel1.json");
       this.load.image("nave", "./public/images/Nave.png");
@@ -62,19 +62,23 @@ export default class Preload extends Phaser.Scene {
         repeat: 0,
         hideOnComplete: false,
       });
-      this.scene.start("MenuScene"); 
 //presentación video
-      let presentacion = this.add.video(0, 0, "presentacion").setOrigin(0).setInteractive(); 
+this.presentacion = this.add.video(710.5, 440, "presentacion").setInteractive();
 
-      presentacion.play();
-  
-      presentacion.on("complete", () => {
-        this.scene.start("MenuScene");
-      });
-  
-      presentacion.on("pointerdown", () => {
-        this.scene.start("MenuScene");
-      });
+const scaleWidth = this.cameras.main.width / this.presentacion.width;
+const scaleHeight = this.cameras.main.height / this.presentacion.height;
+const scaleFactor = Math.min(scaleWidth, scaleHeight);
 
-    }
+this.presentacion.setScale(scaleFactor);
+
+this.presentacion.play() 
+
+this.presentacion.on('complete', () => {
+  this.scene.start("MenuScene");
+});
+
+this.presentacion.on('pointerdown', () => {
+  this.scene.start("MenuScene");
+});
+  }
   }
