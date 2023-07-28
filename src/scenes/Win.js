@@ -4,10 +4,9 @@ export default class Win extends Phaser.Scene {
   }
 
   create (){
+    this.sound.stopAll();
+    this.sound.removeAll();
     this.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-    this.winMusic = this.sound.add("winMusic");
-    this.winMusic.loop = false;
-    this.winMusic.play();
     const screenWidth = this.cameras.main.width;
     const screenHeight = this.cameras.main.height;
     this.imagenVictoria = this.add.image(screenWidth / 2, screenHeight / 2 , "restart").setScale(2);

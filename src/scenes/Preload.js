@@ -18,6 +18,7 @@ export default class Preload extends Phaser.Scene {
       this.load.image("Escenario2", "./public/images/Escenario2.png");
       this.load.image("Disparo", "./public/images/Disparo.png");
       this.load.image("VidaNave", "./public/images/VidaNave.png");
+      this.load.image("InteriorVidaNave", "./public/images/InteriorVidaNave.png");	
       this.load.image("meteorito", "./public/images/Meteorito.png");
       this.load.image("explosionNave", "./public/images/explosionNave.gif");
       this.load.image("Logo", "./public/images/Logo.jpeg");
@@ -38,6 +39,7 @@ export default class Preload extends Phaser.Scene {
       this.load.image("habilidad3", "./public/images/Habilidad3.png");
       this.load.image("BossFinal", "./public/images/BossFinal.png"); 
       this.load.image("enemie", "./public/images/enemie1.png");
+      this.load.image("SkipIcon", "./public/images/SkipIcon.png");
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
         frameHeight: 228
@@ -62,23 +64,76 @@ export default class Preload extends Phaser.Scene {
         repeat: 0,
         hideOnComplete: false,
       });
-//presentación video
-this.presentacion = this.add.video(710.5, 440, "presentacion").setInteractive();
+    
+      // Presentación de video
+      this.numClicks = 0;
+      this.presentacion = this.add.video(710.5, 440, "presentacion").setInteractive();
+    
+      const scaleWidth = this.cameras.main.width / this.presentacion.width;
+      const scaleHeight = this.cameras.main.height / this.presentacion.height;
+      const scaleFactor = Math.min(scaleWidth, scaleHeight);
+      this.presentacion.setScale(scaleFactor);
+      this.presentacion.play();
+    
+      this.presentacion.on('complete', () => {
+        this.scene.start("MenuScene");
+      });
+    
+      // Configuración del círculo blanco
+      const circleRadius = 40;
+      const circleX = this.cameras.main.width - circleRadius - 20;
+      const circleY = circleRadius + 60;
+      const circle = this.add.circle(circleX, circleY, circleRadius, 0x808080).setAlpha(0.5);      
+      const skipIconX = circleX + 2;
+      const skipIconY = circleY;
+      const skipIcon = this.add.image(skipIconX, skipIconY, "SkipIcon") .setScale(0.17);
+      skipIcon.setInteractive();
+      skipIcon.setScrollFactor(0);
+      skipIcon.setDepth(2);
+    
+      circle.on('pointerover', () => {
+        skipIcon.setScale(0.2); // Aumentar la escala de la imagen
+        circle.setScale(1.2); // Aumentar la escala del círculo
+      });
+    
+      circle.on('pointerout', () => {
+        skipIcon.setScale(0.17); // Restaurar la escala original de la imagen
+        circle.setScale(1); // Restaurar la escala original del círculo
+      });
 
-const scaleWidth = this.cameras.main.width / this.presentacion.width;
-const scaleHeight = this.cameras.main.height / this.presentacion.height;
-const scaleFactor = Math.min(scaleWidth, scaleHeight);
-
-this.presentacion.setScale(scaleFactor);
-
-this.presentacion.play() 
-
-this.presentacion.on('complete', () => {
-  this.scene.start("MenuScene");
-});
-
-this.presentacion.on('pointerdown', () => {
-  this.scene.start("MenuScene");
-});
+      circle.on('pointerdown', () => {
+        this.skipPresentation();
+      });
+    
+      skipIcon.on('pointerover', () => {
+        skipIcon.setScale(0.2); // Aumentar la escala de la imagen
+        circle.setScale(1.2); // Aumentar la escala del círculo
+      });
+      
+      skipIcon.on('pointerout', () => {
+        skipIcon.setScale(0.17); // Restaurar la escala original de la imagen
+        circle.setScale(1); // Restaurar la escala original del círculo
+      });
+    
+      // Evento al hacer clic en la imagen
+      skipIcon.on('pointerdown', () => {
+        this.skipPresentation();
+      });
+    
+      // Ocultar el círculo e imagen al inicio
+      circle.setVisible(false);
+      skipIcon.setVisible(false);
+    
+      // Configurar el temporizador para mostrar el círculo e imagen después de 3 segundos
+      this.time.delayedCall(3500, () => {
+        circle.setVisible(true);
+        skipIcon.setVisible(true);
+      });
+    }
+    
+    // Función para saltar la presentación y cambiar de escena
+    skipPresentation() {
+      this.scene.start("MenuScene");
+    }
   }
-  }
+    

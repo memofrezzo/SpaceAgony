@@ -130,7 +130,7 @@ export default class Nivel1 extends Phaser.Scene {
       this.exit = this.physics.add
       .sprite(20500, spawnPoint.y, "Estrella") 
       .setScale(1)
-      .setSize(40,1000);
+      .setSize(40,2000);
     }
     this.physics.add.overlap(
       this.nave,

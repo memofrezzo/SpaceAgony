@@ -75,8 +75,8 @@ export default class nivel2 extends Phaser.Scene {
     this.habilidad2Group = this.physics.add.group();
     const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
     const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
-    this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave);    
-    this.nave = new Nave(this, naveX, naveY, this.meteoroGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
+    this.nave = new Nave(this, naveX + 120, naveY, this.meteoroGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
+    this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave, this.disparoGroup);
     this.meteoritoSpawnTimer = 0;
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
@@ -282,8 +282,6 @@ export default class nivel2 extends Phaser.Scene {
   
   esVencedor() {
     // Detener y eliminar todos los sonidos y música de la escena actual
-    this.sound.stopAll();
-    this.sound.removeAll();
     this.FinalBoss.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
     this.time.delayedCall(2000, () => {
       this.scene.start("Win");
@@ -300,6 +298,7 @@ export default class nivel2 extends Phaser.Scene {
 
   update(time) {
     this.nave.update(time);
+    this.FinalBoss.update(time);
     const cameraOffsetX = -500; // Desplazamiento horizontal desde la posición de la nave
     const cameraOffsetY = 0; // Desplazamiento vertical desde la posición de la nave
     this.cameras.main.setFollowOffset(cameraOffsetX, cameraOffsetY);
