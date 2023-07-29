@@ -29,6 +29,7 @@ export default class nivel2 extends Phaser.Scene {
     this.vidasContainer.add(this.corazonImage);
     this.vidasContainer.add(this.vidasText);
     this.disparoGroup = this.physics.add.group();
+    this.disparoFinalBossGroup = this.physics.add.group();
     this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
     this.musicOff.setScale(0.1);
     this.musicOff.setDepth(2);
@@ -65,18 +66,21 @@ export default class nivel2 extends Phaser.Scene {
     const yOffset = 0;
     this.cameras.main.setScroll(0, yOffset);
 
-    const naveX = 163.333333333333;
-    const naveY = 510.666666666667;
+     // Crea la nave
+  const naveX = 163.333333333333;
+  const naveY = 510.666666666667;
+  this.nave = new Nave(this, naveX + 120, naveY, this.meteoroGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
+
+  // Luego crea el FinalBoss, pasando la referencia de la nave
+  const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
+  const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
+  this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave, this.disparoGroup);
 
     // Crear el grupo de meteoros
     this.meteoroGroup = this.physics.add.group();
     this.corazonGroup = this.physics.add.group();
     this.habilidad1Group = this.physics.add.group();
     this.habilidad2Group = this.physics.add.group();
-    const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
-    const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
-    this.nave = new Nave(this, naveX + 120, naveY, this.meteoroGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
-    this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave, this.disparoGroup);
     this.meteoritoSpawnTimer = 0;
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);

@@ -16,6 +16,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
       this.on('muerteNave', () => {
         this.desactivarNave();
+        this.scene.start("GameOver");
       });
     }
   
@@ -23,7 +24,7 @@ export default class Nave extends Phaser.GameObjects.Sprite {
   
     restarVida() {
       this.vidas--;
-      if (this.vidas <= 0) {
+      if (this.vidas === 0) {
         this.emit('muerteNave'); // Emitir el evento de muerte de la nave
       }
     }
