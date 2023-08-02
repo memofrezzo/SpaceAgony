@@ -1,5 +1,5 @@
 export default class Nave extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, meteoroGroup, corazonGroup) {
+    constructor(scene, x, y, meteoroGroup, basuraGroup, corazonGroup) {
       super(scene, x, y, "Nave2");
   
       scene.add.existing(this);
@@ -13,7 +13,9 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.shootDelay = 400;
       this.lastShootTime = 400;
       this.corazonGroup = corazonGroup; 
-      this.meteoroGroup = meteoroGroup; // Asignar el grupo de meteoros
+      this.meteoroGroup = meteoroGroup; 
+      this.basuraGroup = basuraGroup; 
+
       this.on('muerteNave', () => {
         this.desactivarNave();
         this.scene.start("GameOver");

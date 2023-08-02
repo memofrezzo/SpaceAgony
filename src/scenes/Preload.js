@@ -41,6 +41,7 @@ export default class Preload extends Phaser.Scene {
       this.load.image("enemie", "./public/images/enemie1.png");
       this.load.image("SkipIcon", "./public/images/SkipIcon.png");
       this.load.image("ballOfPower", "./public/images/BallOfPower.png");
+      this.load.image("BasuraEspacial", "./public/images/BasuraEspacial.png"); 
       this.load.spritesheet("ExplosionNave", "./public/images/explosionNave.png", {
         frameWidth: 156,
         frameHeight: 228
@@ -134,7 +135,7 @@ export default class Preload extends Phaser.Scene {
     
     // Función para saltar la presentación y cambiar de escena
     skipPresentation() {
-      this.scene.start("nivel2");
+      this.scene.start("MenuScene");
     }
   }
     

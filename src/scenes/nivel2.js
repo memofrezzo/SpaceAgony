@@ -17,6 +17,7 @@ export default class nivel2 extends Phaser.Scene {
     this.vidasContainer.setScrollFactor(0);
     this.vidasContainer.setDepth(2);
     this.musicBoss = this.sound.add('musicArcade');
+    this.generarBasura = true;
 
     if (this.vidas <= 0) { this.nave.on('muerteNave', () => {
       this.gameOver(); // Llamar al método gameOver cuando la nave se quede sin vidas
@@ -67,24 +68,27 @@ export default class nivel2 extends Phaser.Scene {
     this.cameras.main.setScroll(0, yOffset);
 
      // Crea la nave
-  const naveX = 163.333333333333;
-  const naveY = 510.666666666667;
-  this.nave = new Nave(this, naveX + 120, naveY, this.meteoroGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
 
-  // Luego crea el FinalBoss, pasando la referencia de la nave
-  const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
-  const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
-  this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave, this.disparoGroup);
-
-    // Crear el grupo de meteoros
     this.meteoroGroup = this.physics.add.group();
+    this.basuraGroup = this.physics.add.group();
     this.corazonGroup = this.physics.add.group();
     this.habilidad1Group = this.physics.add.group();
     this.habilidad2Group = this.physics.add.group();
     this.meteoritoSpawnTimer = 0;
+   
+
+    const naveX = 163.333333333333;
+    const naveY = 510.666666666667;
+    this.nave = new Nave(this, naveX + 120, naveY, this.meteoroGroup, this.basuraGroup, this.corazonGroup, this.habilidad1Group, this.habilidad2Group);
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
     this.cameras.main.setScroll(0, 40);
+    // Luego crea el FinalBoss, pasando la referencia de la nave
+    const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
+    const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
+    this.FinalBoss = new FinalBoss(this, jefeFinalX, jefeFinalY, this.nave, this.disparoGroup, this);
+    // Crear el grupo de meteoros
+    
 
     //Habilidad1
     this.time.addEvent({
@@ -106,7 +110,16 @@ export default class nivel2 extends Phaser.Scene {
       callbackScope: this
     });
 
-//BOSSFINAL
+    this.time.addEvent({
+      delay: 1500,
+      loop: true,
+      callback: () => {
+        if (this.generarBasura) { // Verificar si se deben generar meteoritos
+          this.generarImagen2();
+        }
+      },
+      callbackScope: this
+    });
 
     //GenerarCorazón
     this.time.addEvent({
@@ -141,7 +154,6 @@ export default class nivel2 extends Phaser.Scene {
       this.nave,
       this.exit,
       this.FinalBoss.morir,
-      this.esVencedor,
       null,
       this
     );    
@@ -151,6 +163,8 @@ export default class nivel2 extends Phaser.Scene {
     this.physics.add.overlap(this.nave, this.habilidad1Group, this.handleCollisionHabilidad1, null, this);
     this.physics.add.overlap(this.nave, this.habilidad2Group, this.handleCollisionHabilidad2, null, this); 
     this.physics.add.overlap(this.FinalBoss, this.disparoGroup, this.FinalBoss.handleCollisionDisparo, null, this); 
+    this.physics.add.overlap(this.nave, this.basuraGroup, this.handleCollisionBasuraEspacial, null, this);
+    this.physics.add.overlap(this.disparoGroup, this.basuraGroup, this.handleDisparoCollision, null, this);
   
     this.physics.add.overlap(this.disparoGroup, this.meteoroGroup, this.handleDisparoCollision, null, this);
     }
@@ -174,13 +188,45 @@ export default class nivel2 extends Phaser.Scene {
       this.nave.shootDelay = 200; // Reducir el tiempo de retardo entre disparos a 200 ms
     }
     
+    handleCollisionBasuraEspacial(nave, basuraEspacial) {
+      this.vidas--;
+      basuraEspacial.disableBody(true, true);
+      this.actualizarCorazones();
     
+      if (this.vidas > 0) {
+        // Hacer parpadear la nave
+        this.nave.blinkNave();
+    
+        // Esperar 2 segundos antes de permitir otra colisión
+        this.time.delayedCall(2000, () => {
+          // Hacer visible la nave nuevamente
+          this.nave.setActive(true);
+          this.nave.setVisible(true);
+        }, this);
+      } else {
+        this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
+        this.time.delayedCall(2000, () => {
+          this.gameOver();
+        }, this);
+      }
+    }
 
-    handleDisparoCollision(disparo, meteoro) {
-      // Aquí puedes definir cómo se maneja la colisión entre un disparo y un meteoro
-      // Por ejemplo, puedes desactivar y ocultar ambos objetos
-      disparo.disableBody(true, true);
-      meteoro.disableBody(true, true);
+    handleDisparoCollision(disparo, objetoColisionado) {
+      // Verificar si el objeto colisionado es un meteoro
+      if (objetoColisionado.texture.key === 'meteorito') {
+        // Aquí puedes definir cómo se maneja la colisión entre un disparo y un meteoro
+        // Por ejemplo, puedes desactivar y ocultar ambos objetos
+        disparo.disableBody(true, true);
+        objetoColisionado.disableBody(true, true);
+      }
+    
+      // Verificar si el objeto colisionado es la basura espacial
+      if (objetoColisionado.texture.key === 'BasuraEspacial') {
+        // Aquí puedes definir cómo se maneja la colisión entre un disparo y la basura espacial
+        // Por ejemplo, puedes desactivar y ocultar ambos objetos
+        disparo.disableBody(true, true);
+        objetoColisionado.disableBody(true, true);
+      }
     }
    generarCorazon() {const camera = this.cameras.main;
     const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
@@ -271,6 +317,64 @@ export default class nivel2 extends Phaser.Scene {
     });
   }  
 
+  generarImagen2() {
+    const finalBoss = this.FinalBoss; // Asigna el objeto FinalBoss a una variable local
+  
+    if (!finalBoss || !finalBoss.active) {
+      // Si el FinalBoss no existe o no está activo, no generamos la imagen
+      return;
+    }
+  
+    const camera = this.cameras.main;
+    const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
+  
+    const x = finalBoss.x; // Posición X desde la posición actual del FinalBoss
+    const y = finalBoss.y; // Posición Y desde la posición actual del FinalBoss
+  
+    const velocidadAleatoriaX = Phaser.Math.Between(400, 600); // Velocidad aleatoria entre 400 y 600 en el eje X  
+    const sprite = this.basuraGroup.create(x, y, 'ballOfPower')
+    sprite.setVelocityX(-velocidadAleatoriaX); // Establecer la velocidad hacia la izquierda
+    sprite.setVelocityY(0); // Velocidad inicial en el eje Y (sin movimiento vertical)
+  
+    // Ajustar el tiempo para que el objeto desaparezca después de 4 segundos
+    this.time.delayedCall(4000, () => {
+      sprite.destroy(); // Eliminar el objeto después de 4 segundos
+    });
+  
+    // Función para mover la basura espacial hacia la nave con un retraso
+    const moveTowardsNave = () => {
+      const directionX = this.nave.x - sprite.x;
+      const directionY = this.nave.y - sprite.y;
+  
+      // Normalizar la dirección para obtener un vector de longitud 1
+      const length = Math.sqrt(directionX * directionX + directionY * directionY);
+      const directionXNormalized = directionX / length;
+      const directionYNormalized = directionY / length;
+  
+      // Velocidad a la que seguirá a la nave
+      const velocidadSeguimiento = 900;
+  
+      // Mover la basura espacial hacia la nave con el vector de dirección normalizado
+      sprite.setVelocityX(velocidadSeguimiento * directionXNormalized);
+      sprite.setVelocityY(velocidadSeguimiento * directionYNormalized);
+    };
+  
+    // Retrasar el movimiento hacia la nave por 1 segundo
+    this.time.delayedCall(50, moveTowardsNave);
+  
+    // Establecer la detección de límites superior e inferior con rebote
+    sprite.body.setCollideWorldBounds(true);
+    sprite.body.onWorldBounds = true;
+  
+    // Controlar el rebote en el eje Y
+    sprite.body.world.on('worldbounds', (body) => {
+      if (body === sprite.body) {
+        // Invertir la velocidad en el eje Y para rebote
+        sprite.setVelocityY(-sprite.body.velocity.y);
+      }
+    });
+  }
+
   generarImagen() {
     const camera = this.cameras.main;
     const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
@@ -282,21 +386,12 @@ export default class nivel2 extends Phaser.Scene {
     const sprite = this.meteoroGroup.create(x, y, 'meteorito').setScale(0.9);
     sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
   }
-  
-  
-  esVencedor() {
-    // Detener y eliminar todos los sonidos y música de la escena actual
-    this.FinalBoss.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
-    this.time.delayedCall(2000, () => {
-      this.scene.start("Win");
-    }, this);
-  }
 
   gameOver() {
     // Detener y eliminar todos los sonidos y música de la escena actual
     this.sound.stopAll();
     this.sound.removeAll();
-
+    this.generarBasura = false;
     this.scene.start('GameOver');
   }
 
