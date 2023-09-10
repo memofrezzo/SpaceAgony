@@ -8,13 +8,14 @@ export default class Nivel1 extends Phaser.Scene {
     this.playerSurvived = false;
     this.isNextLevelEnabled = false;
     this.vidas = 3;
-  }
+    }
   
   create() {
     this.vidasContainer = this.add.container(0, 0);
     this.vidasContainer.setScrollFactor(0);
     this.vidasContainer.setDepth(2);
-
+    this.tiempoGeneracionMeteoritoInicial = 1500;
+    this.tiempoGeneracionBasuraInicial = 2500;
     this.corazonImage = this.add.image(45, 5, 'corazon').setScale(0.5);
     this.vidasText = this.add.text(0, -10, '', { fontFamily: 'Arial', fontSize: '24px', fill: '#ffffff' });
     this.vidasText.setText(this.vidas.toString());
@@ -112,23 +113,29 @@ export default class Nivel1 extends Phaser.Scene {
       callbackScope: this
     });
 
-    //generar basura Espacial
-    this.time.addEvent({
-      delay: 1500,
-      loop: true,
-      callback: this.generarImagen2,
-      callbackScope: this
-    });
+    // Generar basura espacial
+this.time.addEvent({
+  delay: this.tiempoGeneracionBasuraInicial,
+  loop: true,
+  callback: () => {
+    this.generarImagen2();
+    this.tiempoGeneracionBasuraInicial *= 0.5;  // Actualizar el tiempo
+    console.log('Nuevo tiempo de generación de basura espacial:', this.tiempoGeneracionBasuraInicial);
+  },
+  callbackScope: this
+});
 
-    //generar meteorito
-    this.time.addEvent({
-      delay: 1000,
-      loop: true,
-      callback: () => {
-        this.generarImagen();
-      },
-      callbackScope: this
-    });
+// Generar meteorito
+this.time.addEvent({
+  delay: this.tiempoGeneracionMeteoritoInicial,
+  loop: true,
+  callback: () => {
+    this.generarImagen();
+    this.tiempoGeneracionMeteoritoInicial *= 0.5;  // Actualizar el tiempo
+    console.log('Nuevo tiempo de generación de meteoritos:', this.tiempoGeneracionMeteoritoInicial);
+  },
+  callbackScope: this
+});
   
     //exit
     const spawnPoint = this.map.findObject("objects", (obj) => obj.name === "exit");
@@ -160,7 +167,10 @@ export default class Nivel1 extends Phaser.Scene {
     handleCollisionHabilidad1(nave, habilidad1) {
       this.nave.habilidad1Activa = true; // Activar la habilidad 1
       habilidad1.disableBody(true, true); // Ocultar y desactivar la habilidad 1 colisionada
-      
+      const aumentoVelocidadUp = 1.25
+      const aumentoVelocidadDown = 1.25
+      this.nave.VelocidadUp *= aumentoVelocidadUp
+      this.nave.VelocidadDown *= aumentoVelocidadDown
       // Realizar las acciones correspondientes a la habilidad 1
       // Por ejemplo, aumentar la velocidad de la nave en el eje Y
      // Aumentar la velocidad en 100 unidades en el eje Y
@@ -170,10 +180,13 @@ export default class Nivel1 extends Phaser.Scene {
     handleCollisionHabilidad2(nave, habilidad2) {
       this.nave.habilidad2Activa = true; // Activar la habilidad 2
       habilidad2.disableBody(true, true); // Ocultar y desactivar la habilidad 2 colisionada
-      
-      // Realizar las acciones correspondientes a la habilidad 2
-      // Por ejemplo, aumentar la velocidad de los disparos de la nave
-      this.nave.shootDelay = 200; // Reducir el tiempo de retardo entre disparos a 200 ms
+      const aumentoVelocidad = 1.1; // Aumentar la velocidad en un 25%
+      const aumentoTamaño = 1.20; // Aumentar el tamaño en un 25%
+      const aumentoShootDelay = 0.9; // Aumentar
+      // Actualizar las propiedades de la nave para los disparos
+      this.nave.velocidadDisparo *= aumentoVelocidad;
+      this.nave.tamanoDisparo *= aumentoTamaño;
+      this.nave.shootDelay *= aumentoShootDelay;
     }
     
     handleCollisionBasuraEspacial(nave, basuraEspacial) {
@@ -322,7 +335,7 @@ generarImagen2() {
   sprite.setVelocityY(0); // Velocidad inicial en el eje Y (sin movimiento vertical)
 
   // Ajustar el tiempo para que el objeto desaparezca después de 4 segundos
-  this.time.delayedCall(4000, () => {
+  this.time.delayedCall(3000, () => {
     sprite.destroy(); // Eliminar el objeto después de 4 segundos
   });
 

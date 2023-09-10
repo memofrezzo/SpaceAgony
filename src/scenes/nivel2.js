@@ -172,7 +172,10 @@ export default class nivel2 extends Phaser.Scene {
     handleCollisionHabilidad1(nave, habilidad1) {
       this.nave.habilidad1Activa = true; // Activar la habilidad 1
       habilidad1.disableBody(true, true); // Ocultar y desactivar la habilidad 1 colisionada
-      
+      const aumentoVelocidadUp = 1.25
+      const aumentoVelocidadDown = 1.25
+      this.nave.VelocidadUp *= aumentoVelocidadUp
+      this.nave.VelocidadDown *= aumentoVelocidadDown
       // Realizar las acciones correspondientes a la habilidad 1
       // Por ejemplo, aumentar la velocidad de la nave en el eje Y
      // Aumentar la velocidad en 100 unidades en el eje Y
@@ -182,10 +185,13 @@ export default class nivel2 extends Phaser.Scene {
     handleCollisionHabilidad2(nave, habilidad2) {
       this.nave.habilidad2Activa = true; // Activar la habilidad 2
       habilidad2.disableBody(true, true); // Ocultar y desactivar la habilidad 2 colisionada
-      
-      // Realizar las acciones correspondientes a la habilidad 2
-      // Por ejemplo, aumentar la velocidad de los disparos de la nave
-      this.nave.shootDelay = 200; // Reducir el tiempo de retardo entre disparos a 200 ms
+      const aumentoVelocidad = 1.20; // Aumentar la velocidad en un 25%
+      const aumentoTamaño = 1.20; // Aumentar el tamaño en un 25%
+      const aumentoShootDelay = 0.80; // Aumentar
+      // Actualizar las propiedades de la nave para los disparos
+      this.nave.velocidadDisparo *= aumentoVelocidad;
+      this.nave.tamanoDisparo *= aumentoTamaño;
+      this.nave.shootDelay *= aumentoShootDelay;
     }
     
     handleCollisionBasuraEspacial(nave, basuraEspacial) {

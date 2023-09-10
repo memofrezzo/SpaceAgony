@@ -1,5 +1,5 @@
 export default class Nave extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, meteoroGroup, basuraGroup, corazonGroup) {
+    constructor(scene, x, y, meteoroGroup, basuraGroup, corazonGroup, habilidad2Group) {
       super(scene, x, y, "Nave2");
   
       scene.add.existing(this);
@@ -8,6 +8,8 @@ export default class Nave extends Phaser.GameObjects.Sprite {
      // this.body.setGravityY(0);
       this.body.setCollideWorldBounds(true);
       this.body.setVelocityX(300);
+      this.VelocidadUp = -400 
+      this.VelocidadDown = 400
       this.setScale(0.45);
       this.isShooting = false;
       this.shootDelay = 400;
@@ -15,7 +17,8 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       this.corazonGroup = corazonGroup; 
       this.meteoroGroup = meteoroGroup; 
       this.basuraGroup = basuraGroup; 
-
+      this.tamanoDisparo = 0.3; // Tamaño inicial
+      this.velocidadDisparo = 1500; // Velocidad inicial
       this.on('muerteNave', () => {
         this.desactivarNave();
         this.scene.start("GameOver");
@@ -37,29 +40,10 @@ export default class Nave extends Phaser.GameObjects.Sprite {
       const teclas = this.scene.input.keyboard.createCursorKeys();
       const camera = this.scene.cameras.main;
   
-      if (this.habilidad1Activa) {
-        // Velocidad más rápida cuando la habilidad1 está activa
         if (teclas.up.isDown && this.y > camera.y) {
-          this.body.velocity.y = -600; // Velocidad hacia arriba más rápida
+          this.body.velocity.y = this.VelocidadUp; // Velocidad hacia arriba normal
         } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
-          this.body.velocity.y = 600; // Velocidad hacia abajo más rápida
-        } else {
-          this.body.velocity.y = 0;
-        }
-        if (teclas.space.isDown) {
-          // Verificación del tiempo suficiente desde el último disparo
-          if (time > this.lastShootTime + this.shootDelay) {
-            this.shoot();
-            this.lastShootTime = time;
-          }
-      } 
-      }
-      else {
-        // Velocidad normal sin la habilidad1 activa
-        if (teclas.up.isDown && this.y > camera.y) {
-          this.body.velocity.y = -400; // Velocidad hacia arriba normal
-        } else if (teclas.down.isDown && this.y < camera.y + camera.height) {
-          this.body.velocity.y = 400; // Velocidad hacia abajo normal
+          this.body.velocity.y = this.VelocidadDown; // Velocidad hacia abajo normal
         } else {
           this.body.velocity.y = 0;
         }
@@ -72,14 +56,13 @@ export default class Nave extends Phaser.GameObjects.Sprite {
         }
       }
     }
-  }
     shoot() {
       this.scene.sound.play('shot', { volume: 0.9 }); // Ajusta el volumen según tus necesidades
 
       // Crear y configurar el disparo
       const disparo = this.scene.disparoGroup.create(this.x + 15, this.y + 1, 'Disparo');
-      disparo.setVelocityX(1500); // Velocidad del disparo en el eje X
-      disparo.setScale(0.3);
+      disparo.setVelocityX(this.velocidadDisparo); // Velocidad del disparo en el eje X
+      disparo.setScale(this.tamanoDisparo);
   
       // Destrucción el disparo después de cierto tiempo para evitar la acumulación de disparos en el mundo
       this.scene.time.addEvent({
