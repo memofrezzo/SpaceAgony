@@ -6,7 +6,7 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
     this.setScale(0.8);
     scene.physics.add.existing(this);
     scene.physics.world.enable(this);
-    this.vidaMaxima = 1000;
+    this.vidaMaxima = 2000;
     this.vidaActual = this.vidaMaxima;
     this.isInvulnerable = false;
     this.body.setCollideWorldBounds(true);
@@ -18,7 +18,7 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
     this.disparoFinalBossGroup = scene.physics.add.group(); // Nuevo grupo para los disparos del jefe final
     this.barraDeVida1 = scene.add.image(x - 100, y + 170, 'VidaNave').setDepth(1);
     this.barraDeVida2 = scene.add.image(x - 100, y + 170, 'InteriorVidaNave').setDepth(2);
-    this.winMusic = this.sound.add("winMusic");
+    //this.winMusic = this.sound.add("winMusic");
     this.nivel2Instance = nivel2Instance;
   }
 
@@ -61,9 +61,9 @@ export default class FinalBoss extends Phaser.GameObjects.Sprite {
     this.barraDeVida2.setVisible(false);
     this.play('ExplosionNave');
     this.setScale(2); // Establecer la escala después de llamar a la animación
-      this.winMusic.play();
+     // this.winMusic.play();
     this.nivel2Instance.generarBasura = false;
-    this.scene.time.delayedCall(2700, () => {
+    this.scene.time.delayedCall(2000, () => {
       
       // Ir a pantalla de victoria
       this.scene.scene.start('Win');

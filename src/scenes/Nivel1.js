@@ -14,14 +14,13 @@ export default class Nivel1 extends Phaser.Scene {
     this.vidasContainer = this.add.container(0, 0);
     this.vidasContainer.setScrollFactor(0);
     this.vidasContainer.setDepth(2);
-    this.tiempoGeneracionMeteoritoInicial = 1500;
-    this.tiempoGeneracionBasuraInicial = 2500;
     this.corazonImage = this.add.image(45, 5, 'corazon').setScale(0.5);
     this.vidasText = this.add.text(0, -10, '', { fontFamily: 'Arial', fontSize: '24px', fill: '#ffffff' });
     this.vidasText.setText(this.vidas.toString());
     this.vidasContainer.add(this.corazonImage);
     this.vidasContainer.add(this.vidasText);
-    
+    this.tiempoGeneracionMeteoritoInicial = 1500;
+    this.tiempoGeneracionBasuraInicial = 2500;
     this.music1 = this.sound.add('musica1');
     this.musicBoss = this.sound.add('musicArcade');
 
@@ -119,7 +118,7 @@ this.time.addEvent({
   loop: true,
   callback: () => {
     this.generarImagen2();
-    this.tiempoGeneracionBasuraInicial *= 0.5;  // Actualizar el tiempo
+    this.disminuirTiempoBasura();  // Actualiza el tiempo
     console.log('Nuevo tiempo de generación de basura espacial:', this.tiempoGeneracionBasuraInicial);
   },
   callbackScope: this
@@ -131,7 +130,7 @@ this.time.addEvent({
   loop: true,
   callback: () => {
     this.generarImagen();
-    this.tiempoGeneracionMeteoritoInicial *= 0.5;  // Actualizar el tiempo
+    this.disminuirTiempoMeteoro();  // Actualiza el tiempo
     console.log('Nuevo tiempo de generación de meteoritos:', this.tiempoGeneracionMeteoritoInicial);
   },
   callbackScope: this
@@ -319,6 +318,20 @@ this.time.addEvent({
     });
   }  
   
+//generar Meteoritos
+  generarImagen() {
+    const camera = this.cameras.main;
+    const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
+  
+    const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
+    const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
+  
+    const velocidadAleatoria = Phaser.Math.Between(300, 500); // Velocidad aleatoria entre 200 y 600
+    const sprite = this.meteoroGroup.create(x, y, 'meteorito').setScale(0.9);
+    sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
+  }
+
+
 // Generar basura Espacial
 generarImagen2() {
   const camera = this.cameras.main;
@@ -372,21 +385,14 @@ generarImagen2() {
     }
   });
 }
-
-
-
-  generarImagen() {
-    const camera = this.cameras.main;
-    const offsetX = 100; // Valor de desplazamiento hacia atrás en el eje X
   
-    const x = camera.scrollX + camera.width + offsetX; // Posición X ajustada
-    const y = Phaser.Math.Between(camera.scrollY, camera.scrollY + camera.height); // Posición Y aleatoria dentro de la cámara
-  
-    const velocidadAleatoria = Phaser.Math.Between(300, 500); // Velocidad aleatoria entre 200 y 600
-    const sprite = this.meteoroGroup.create(x, y, 'meteorito').setScale(0.9);
-    sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
+  disminuirTiempoBasura(){
+    this.tiempoGeneracionBasuraInicial *= 0.5
   }
-  
+  disminuirTiempoMeteoro(){
+    this.tiempoGeneracionMeteoritoInicial *= 0.5
+  }
+
   esVencedor() {
     this.musicBoss.play();
     this.scene.start("nivel2");

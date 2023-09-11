@@ -1,4 +1,4 @@
-export default class Win extends Phaser.Scene {
+export default class Win extends Phaser.Scene {play
   constructor() {
     super("Win");
   }
@@ -6,6 +6,8 @@ export default class Win extends Phaser.Scene {
   create (){
     this.sound.stopAll();
     this.sound.removeAll();
+    this.winMusic = this.sound.add("winMusic");
+    this.winMusic.play()
     this.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     const screenWidth = this.cameras.main.width;
     const screenHeight = this.cameras.main.height;
