@@ -113,28 +113,28 @@ export default class Nivel1 extends Phaser.Scene {
     });
 
     // Generar basura espacial
-this.time.addEvent({
-  delay: this.tiempoGeneracionBasuraInicial,
-  loop: true,
-  callback: () => {
-    this.generarImagen2();
-    this.disminuirTiempoBasura();  // Actualiza el tiempo
-    console.log('Nuevo tiempo de generación de basura espacial:', this.tiempoGeneracionBasuraInicial);
-  },
-  callbackScope: this
-});
-
-// Generar meteorito
-this.time.addEvent({
-  delay: this.tiempoGeneracionMeteoritoInicial,
-  loop: true,
-  callback: () => {
-    this.generarImagen();
-    this.disminuirTiempoMeteoro();  // Actualiza el tiempo
-    console.log('Nuevo tiempo de generación de meteoritos:', this.tiempoGeneracionMeteoritoInicial);
-  },
-  callbackScope: this
-});
+    this.time.addEvent({
+      delay: this.tiempoGeneracionBasuraInicial,
+      loop: true,
+      callback: () => {
+        this.generarImagen2();
+        this.tiempoGeneracionBasuraInicial *= 0.5;  // Actualizar el tiempo
+        console.log('Nuevo tiempo de generación de basura espacial:', this.tiempoGeneracionBasuraInicial);
+      },
+      callbackScope: this
+    });
+    
+    // Generar meteorito
+    this.time.addEvent({
+      delay: this.tiempoGeneracionMeteoritoInicial,
+      loop: true,
+      callback: () => {
+        this.generarImagen();
+        this.tiempoGeneracionMeteoritoInicial *= 0.5;  // Actualizar el tiempo
+        console.log('Nuevo tiempo de generación de meteoritos:', this.tiempoGeneracionMeteoritoInicial);
+      },
+      callbackScope: this
+    });
   
     //exit
     const spawnPoint = this.map.findObject("objects", (obj) => obj.name === "exit");
@@ -385,13 +385,13 @@ generarImagen2() {
     }
   });
 }
-  
+  /* 
   disminuirTiempoBasura(){
     this.tiempoGeneracionBasuraInicial *= 0.5
   }
   disminuirTiempoMeteoro(){
     this.tiempoGeneracionMeteoritoInicial *= 0.5
-  }
+  } */
 
   esVencedor() {
     this.musicBoss.play();
