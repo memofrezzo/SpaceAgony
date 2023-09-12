@@ -20,7 +20,7 @@ export default class nivel2 extends Phaser.Scene {
     this.generarBasura = true;
 
     if (this.vidas <= 0) { this.nave.on('muerteNave', () => {
-      this.gameOver(); // Llamar al método gameOver cuando la nave se quede sin vidas
+      this.restart(); // Llamar al método gameOver cuando la nave se quede sin vidas
     });}
 
     this.corazonImage = this.add.image(45, 5, 'corazon').setScale(0.5);
@@ -31,18 +31,18 @@ export default class nivel2 extends Phaser.Scene {
     this.vidasContainer.add(this.vidasText);
     this.disparoGroup = this.physics.add.group();
     this.disparoFinalBossGroup = this.physics.add.group();
-    this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
-    this.musicOff.setScale(0.1);
+    this.musicOff = this.physics.add.sprite(1350, 50, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
+    this.musicOff.setScale(0.15);
     this.musicOff.setDepth(2);
     this.musicOff.setVelocityX(300);
   
     const pauseResumeMusic = () => {
       if (this.musicBoss.isPlaying) {
         this.musicBoss.pause();
-        this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
+        this.musicOff.setTexture('musicaOff'); // Cambiar el color de la imagen al pausar la música
       } else {
         this.musicBoss.resume();
-        this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
+        this.musicOff.setTexture('musicaLogo');      
       }
     };
   
@@ -83,6 +83,11 @@ export default class nivel2 extends Phaser.Scene {
     this.cameras.main.startFollow(this.nave);
     this.cameras.main.setLerp(1, 0);
     this.cameras.main.setScroll(0, 40);
+    this.nave.velocidadDisparo = 2000;
+    this.nave.tamanoDisparo = 0.5;
+    this.nave.shootDelay = 300;
+    this.nave.VelocidadUp = -550;
+      this.nave.VelocidadDown = 550
     // Luego crea el FinalBoss, pasando la referencia de la nave
     const jefeFinalX = this.cameras.main.width - 100; // Ajusta la posición X según lo necesites
     const jefeFinalY = this.cameras.main.height / 2; // Ajusta la posición Y según lo necesites
@@ -212,7 +217,7 @@ export default class nivel2 extends Phaser.Scene {
       } else {
         this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
         this.time.delayedCall(2000, () => {
-          this.gameOver();
+          this.restart();
         }, this);
       }
     }
@@ -392,13 +397,17 @@ export default class nivel2 extends Phaser.Scene {
     const sprite = this.meteoroGroup.create(x, y, 'meteorito').setScale(0.9);
     sprite.setVelocityX(-velocidadAleatoria); // Establecer la velocidad hacia la izquierda
   }
-
-  gameOver() {
+  restart() {
     // Detener y eliminar todos los sonidos y música de la escena actual
-    this.sound.stopAll();
-    this.sound.removeAll();
     this.generarBasura = false;
-    this.scene.start('GameOver');
+    this.scene.start('nivel2');
+    this.restarts++; // Incrementar el valor de restart en 1
+    console.log(this.restarts)
+    if (this.restarts >= 3) {
+      this.sound.stopAll();
+      this.sound.removeAll();
+      this.scene.start("GameOver");
+    }
   }
 
   update(time) {
@@ -465,7 +474,7 @@ export default class nivel2 extends Phaser.Scene {
       this.nave.play("ExplosionNave").setScale(2.3); // Reproducir la animación de la explosión de la nave
       this.time.delayedCall(2000, () => {
          
-        this.gameOver();
+        this.restart();
         }, this);
       }
    }

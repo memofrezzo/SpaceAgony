@@ -28,7 +28,7 @@ export default class MenuScene extends Phaser.Scene {
     this.add.image(this.cameras.main.centerX, this.cameras.main.centerY + 260, 'Controls').setOrigin(0.5).setScale(0.65);
 
     // Icono de GitHub
-    let Github = this.add.image(this.cameras.main.centerX -400, this.cameras.main.centerY + 250, 'Github').setOrigin(0.5);
+    let Github = this.add.image(this.cameras.main.centerX -300, this.cameras.main.centerY + 200, 'Github').setOrigin(0.5);
     Github.setInteractive();
     Github.on('pointerover', () => {
       Github.setScale(1.2);
@@ -44,7 +44,7 @@ export default class MenuScene extends Phaser.Scene {
     });
     
     //Donaciones
-    let Donaciones = this.add.image(this.cameras.main.centerX +400, this.cameras.main.centerY + 250, 'Donaciones').setOrigin(0.5);
+    let Donaciones = this.add.image(this.cameras.main.centerX +300, this.cameras.main.centerY + 200, 'Donaciones').setOrigin(0.5);
     Donaciones.setInteractive();
     Donaciones.on('pointerover', () => {
       selectOptionSound.play();

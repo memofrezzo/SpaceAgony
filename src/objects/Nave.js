@@ -1,5 +1,5 @@
 export default class Nave extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, meteoroGroup, basuraGroup, corazonGroup, habilidad2Group) {
+    constructor(scene, x, y, meteoroGroup, basuraGroup, corazonGroup) {
       super(scene, x, y, "Nave2");
   
       scene.add.existing(this);

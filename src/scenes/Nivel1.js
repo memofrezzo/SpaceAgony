@@ -8,6 +8,8 @@ export default class Nivel1 extends Phaser.Scene {
     this.playerSurvived = false;
     this.isNextLevelEnabled = false;
     this.vidas = 3;
+    this.tiempoGeneracionMeteoritoInicial = 1500;
+    this.tiempoGeneracionBasuraInicial = 2000;
     }
   
   create() {
@@ -19,8 +21,6 @@ export default class Nivel1 extends Phaser.Scene {
     this.vidasText.setText(this.vidas.toString());
     this.vidasContainer.add(this.corazonImage);
     this.vidasContainer.add(this.vidasText);
-    this.tiempoGeneracionMeteoritoInicial = 1500;
-    this.tiempoGeneracionBasuraInicial = 2500;
     this.music1 = this.sound.add('musica1');
     this.musicBoss = this.sound.add('musicArcade');
 
@@ -28,18 +28,18 @@ export default class Nivel1 extends Phaser.Scene {
     this.music1.play();
     this.music1.setSeek(2);
     this.disparoGroup = this.physics.add.group();
-    this.musicOff = this.physics.add.sprite(1400, 40, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
-    this.musicOff.setScale(0.1);
+    this.musicOff = this.physics.add.sprite(1350, 50, 'musicaLogo').setInteractive(); //No puse el logo de la música porque no lo terminé
+    this.musicOff.setScale(0.15);
     this.musicOff.setDepth(2);
     this.musicOff.setVelocityX(300);
   
     const pauseResumeMusic = () => {
       if (this.music1.isPlaying) {
         this.music1.pause();
-        this.musicOff.setTint(0xff0000); // Cambiar el color de la imagen al pausar la música
+        this.musicOff.setTexture('musicaOff'); // Cambiar el color de la imagen al pausar la música
       } else {
         this.music1.resume();
-        this.musicOff.clearTint(); // Eliminar el color de la imagen al reanudar la música
+        this.musicOff.setTexture('musicaLogo');      
       }
     };
   
@@ -104,7 +104,7 @@ export default class Nivel1 extends Phaser.Scene {
 
     //GenerarCorazón
     this.time.addEvent({
-      delay: 10000,
+      delay: 9000,
       loop: true,
       callback: () => {
         this.generarCorazon();
